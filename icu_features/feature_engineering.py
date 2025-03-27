@@ -649,8 +649,8 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
     logger.info(f"Time to check for nans: {toc - tic:.2f}s")
 
     # Lazy polars.DataFrame.upsample for time_column with dtype int.
-    # The result is a DataFrame with a row for each hour between 0 and the maximum
-    # time in the dataset for each stay_id.
+    # The result is a DataFrame with a row for each hour between 0 and the maximum time
+    # in the dataset for each stay_id.
     time_ranges = (
         dyn.group_by("stay_id")
         .agg(pl.col("time_hours").max().alias("max_time"))
@@ -667,7 +667,6 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
         .explode("time_hours")
     )
 
-    # equivalent to a pandas outer join
     dyn = dyn.join(time_ranges, on=["stay_id", "time_hours"], how="full", coalesce=True)
     dyn = dyn.sort(["stay_id", "time_hours"])
 
@@ -711,7 +710,7 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
 
         dyn = dyn.with_columns(col)
 
-    expressions += outcomes()
+    expressions += additional_variables() + outcomes()
 
     q = dyn.group_by("stay_id").agg(expressions).explode(pl.exclude("stay_id"))
 
