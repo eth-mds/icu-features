@@ -362,9 +362,9 @@ def eep_label(events: pl.Expr, horizon: int, switches_only: bool = True):
      - If the last event in the history was positive, and there is a positive event
        within the next `horizon` hours, the label is missing.
      - If there was no event in the history or the last event in the history was
-       negative, and there is a positive event within the next `horizon` hours, the
-       label is true. This holds even if there is a negative event at the current time
-       step.
+       negative or switches_only is False, and there is a positive event within the next
+       `horizon` hours, the label is true. This holds even if there is a negative event
+       at the current time step.
      - Else, if there is a negative event within the next `horizon` hours (and no
        positive event within the next `horizon` hours or at the current time step), the
        label is false.
@@ -395,6 +395,9 @@ def eep_label(events: pl.Expr, horizon: int, switches_only: bool = True):
         An expression for an event series. Boolean with possibly missing values.
     horizon : int
         The horizon for the early event prediction task.
+    switches_only : bool, optional, default = True
+        Whether to only assign True labels for switches from stable to unstable. I.e.,
+        no positive labels for events `1 - 1`.
     """
     positive_labels = events.replace(False, None).backward_fill(horizon)
     # shift(-1) and backward_fill(horizon - 1) excludes the last zero.
@@ -437,7 +440,7 @@ def outcomes():
 
     These are:
     - mortality_at_24h: A single label at time 24h after entry to the ICU whether the
-      patient dies in the ICU. THis is a "once per patient" prediction task.
+      patient dies in the ICU. This is a "once per patient" prediction task.
     - decompensation_at_24h: Whether the patient decompensates within the next 24 hours.
       This has label is true if the patient dies within the next 24 hours. Else, this is
       false. This does not have missing values.
@@ -456,10 +459,6 @@ def outcomes():
       hours. The patient has a kidney failure if they are in stage 3 according to the
       KDIGO guidelines:
       https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
-    - los_at_24h: The length of stay in the ICU at 24 hours after entry.
-    - log_creatine_in_1h: The log of the creatinine value in 1 hour.
-    - log_lactate_in_1h: The log of the lactate value in 1 hour.
-    - log_po2: The logarithm of the PaO2 value.
     """
     # mortality_at_24h
     # This is a "once per patient" prediction task. At time step 24h, a label is
@@ -615,11 +614,6 @@ def outcomes():
     aki_3 = pl.when(pl.col("weight").is_null()).then(None).otherwise(aki_3)
     kidney_failure_at_48h = eep_label(aki_3, 48).alias("kidney_failure_at_48h")
 
-    # total length of stay, predicted at 24h after entry to the ICU.
-    los_at_24h = pl.when(pl.col("time_hours").eq(24)).then(pl.col("los_icu"))
-    los_at_24h = pl.when(los_at_24h > 0.1).then(los_at_24h).alias("los_at_24h")
-    log_los_at_24h = los_at_24h.log().alias("log_los_at_24h")
-
     # log(lactate) in 4 hours. This is 1/2 the forecast horizon of circ. failure eep.
     log_lactate_in_4h = (
         (pl.col("lact") + 0.1).log().shift(-4).alias("log_lactate_in_4h")
@@ -652,8 +646,6 @@ def outcomes():
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_hyland,
         kidney_failure_at_48h,
-        los_at_24h,
-        log_los_at_24h,
         log_lactate_in_4h,
         log_rel_urine_rate_in_2h,
         log_pf_ratio_in_12h,
