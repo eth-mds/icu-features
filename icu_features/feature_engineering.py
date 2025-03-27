@@ -481,7 +481,8 @@ def outcomes():
 
     # respiratory_failure_at_24h
     # If the PaO2/FiO2 ratio is below 200, the patient is considered to have a
-    # respiratory failure (event). This used pf_ratio from other_variables().
+    # respiratory failure (event). This used pf_ratio from other_variables(). This uses
+    # a fio2 which was imputed by 21% if the patient was not ventilated.
     RESP_PF_DEF_TSH = 200.0
     events = pl.col("pf_ratio") < RESP_PF_DEF_TSH
     resp_failure_at_24h = eep_label(events, 24).alias("respiratory_failure_at_24h")
@@ -490,6 +491,14 @@ def outcomes():
     remaining_los = pl.col("los_icu") - pl.col("time_hours") / 24.0
     remaining_los = pl.when(remaining_los > 0).then(remaining_los).otherwise(None)
     remaining_los = remaining_los.alias("remaining_los")
+
+    # respiratory failure label with simple imputation of po2 and fio2, related to
+    # Hueser et al., 2024 https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
+    pf_ratio = 100 * pl.col("po2").ffill(1).bfill(1) / pl.col("fio2").ffill(1).bfill(1)
+    events = pf_ratio < RESP_PF_DEF_TSH
+    resp_failure_at_24h_hueser = eep_label(events, 24, switches_only=False).alias(
+        "respiratory_failure_at_24h_hueser"
+    )
 
     # circulatory_failure_at_8h
     # A patient is considered to have a circulatory failure if the mean arterial
@@ -642,6 +651,7 @@ def outcomes():
         mortality_at_24h,
         decompensation_at_24h,
         resp_failure_at_24h,
+        resp_failure_at_24h_hueser,
         remaining_los,
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_hyland,
