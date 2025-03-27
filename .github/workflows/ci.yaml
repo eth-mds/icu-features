@@ -21,7 +21,7 @@ jobs:
       - name: Set up micromamba
         uses: mamba-org/setup-micromamba@d05808540d968a55ca33c798e0661fb98f533c73
         with:
-          micromamba-version: 1.5.10-0
+          micromamba-version: 2.0.8-0
           cache-env: true
           environment-file: environment.yml
           extra-specs: |
