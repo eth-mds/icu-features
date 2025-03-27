@@ -5,9 +5,9 @@ from time import perf_counter
 import click
 import numpy as np
 import polars as pl
-from icu_benchmarks.load import features
 
 from icu_features.constants import CAT_MISSING_NAME, HORIZONS, VARIABLE_REFERENCE_PATH
+from icu_features.load import features
 
 logger = logging.getLogger(__name__)
 
