@@ -5,6 +5,7 @@ from time import perf_counter
 import click
 import numpy as np
 import polars as pl
+from icu_benchmarks.load import features
 
 from icu_features.constants import CAT_MISSING_NAME, HORIZONS, VARIABLE_REFERENCE_PATH
 
@@ -353,7 +354,7 @@ def treatment_continuous_features(
     return expressions
 
 
-def eep_label(events: pl.Expr, horizon: int):
+def eep_label(events: pl.Expr, horizon: int, switches_only: bool = True):
     """
     From an event series, create a label for the early event prediction (eep) task.
 
@@ -377,7 +378,11 @@ def eep_label(events: pl.Expr, horizon: int):
     positive_labels:  1 1 - - - - - - - - - - 1 1 1 1 1 1 1 - 1 1 1 1 1 1 1
     negative_labels:  - 0 0 0 0 0 - 0 0 0 0 0 0 0 - - 0 0 0 0 0 0 0 0 0 0 -
     coalesced_labels: 1 1 0 0 0 0 - 0 0 0 0 0 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1
+
+    if switches_only is True:
     label:            1 - 0 0 0 - - 0 0 0 0 0 1 1 1 1 - - - 0 1 1 1 1 - 1 -
+    else:
+    label:            1 - 0 0 0 - - 0 0 0 0 0 1 1 1 1 - 1 - 0 1 1 1 1 - 1 -
 
     Note that at the time step of a positive event, the label is always missing. At the
     time step of a negative event, the label could be true, false, or missing.
@@ -391,16 +396,16 @@ def eep_label(events: pl.Expr, horizon: int):
     horizon : int
         The horizon for the early event prediction task.
     """
-    events_ffilled = events.forward_fill().replace(None, False)
-
     positive_labels = events.replace(False, None).backward_fill(horizon)
     # shift(-1) and backward_fill(horizon - 1) excludes the last zero.
     negative_labels = events.replace(True, None).shift(-1).backward_fill(horizon - 1)
-
     coalesced_label = pl.coalesce(positive_labels, negative_labels)
-    return pl.when(coalesced_label.eq(False) | events_ffilled.eq(False)).then(
-        coalesced_label
-    )
+
+    if switches_only:
+        events = events.forward_fill()
+    events = events.replace(None, False)
+
+    return pl.when(coalesced_label.eq(False) | events.eq(False)).then(coalesced_label)
 
 
 def polars_nan_or(*args: pl.Expr):
@@ -527,6 +532,42 @@ def outcomes():
     )
     circulatory_failure_at_8h = eep_label(event, 8).alias("circulatory_failure_at_8h")
 
+    # Attempt to reimplement Hyland et al.'s circulatory failure label.
+    # https://www.nature.com/articles/s41591-020-0789-4
+    # First, we interpolate lactate values. If the time difference between two
+    # consecutive lactate measurements is less than 6 hours, or if both lactate values
+    # are either above or below 2, we linearly interpolate the lactate value. Else, we
+    # fill the value forward and backward for 6 hours.
+    time = pl.when(pl.col("lact").notna()).then(pl.col("time_hours"))
+    interp = (time.bfill() - time.ffill() < 6) | (bad_lact.ffill() == bad_lact.bfill())
+    lact_interp = (
+        pl.when(interp)
+        .then(pl.col("lact").interpolate(method="linear"))
+        .otherwise(pl.col("lact").bfill(3).ffill(3))
+    )
+    # On the boundary, if the first value of lactate is above the threshold ("bad"), we
+    # fill backwards indefinitely. If the last value is above the threshold, fill
+    # forward indefinitely.
+    lact_interp = pl.coalesce(
+        lact_interp,
+        pl.when(pl.col("time").le(time.min()) & bad_lact.bfill()).then(
+            lact_interp.ffill()
+        ),
+        pl.when(pl.col("time").ge(time.max()) & bad_lact.ffill()).then(
+            lact_interp.bfill()
+        ),
+    )
+    bad_lact_interp = lact_interp >= HIGH_LACT_TSH
+    event = (
+        pl.when(bad_map & bad_lact_interp)
+        .then(True)
+        .when(~bad_map & ~bad_lact_interp)
+        .then(False)
+    )
+    circulatory_failure_at_8h_hyland = eep_label(event, 8, switches_only=False).alias(
+        "circulatory_failure_at_8h_hyland"
+    )
+
     # kidney_failure_at_48h
     # The patient has a kidney failure if they are in stage 3 according to
     # https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
@@ -609,6 +650,7 @@ def outcomes():
         resp_failure_at_24h,
         remaining_los,
         circulatory_failure_at_8h,
+        circulatory_failure_at_8h_hyland,
         kidney_failure_at_48h,
         los_at_24h,
         log_los_at_24h,
@@ -728,6 +770,13 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
         pl.lit(dataset).alias("dataset"),
         pl.col("time_hours").log1p().alias("log_time_hours"),
     )
+
+    feature_names = set(features())
+    schema_names = set(q.collect_schema().keys())
+    missing_features = feature_names - schema_names
+
+    if missing_features:
+        raise ValueError(f"Missing features: {missing_features}")
 
     tic = perf_counter()
     out = q.collect()
