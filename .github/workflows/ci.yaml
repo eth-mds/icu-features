@@ -19,9 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@d05808540d968a55ca33c798e0661fb98f533c73
+        uses: mamba-org/setup-micromamba@29d0a406a44cd30f78c79aa44683acbf49ebc6b4
         with:
-          micromamba-version: 1.5.10-0
+          micromamba-version: 2.0.8-0
           cache-env: true
           environment-file: environment.yml
           extra-specs: |
