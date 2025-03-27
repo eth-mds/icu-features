@@ -1,0 +1,11 @@
+name: icu-features
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python>=3.12
+  - click
+  - numpy>=2.1
+  - polars
+  - pytest
+  - pyarrow
