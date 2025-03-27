@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Any, Dict
 
 VARIABLE_REFERENCE_PATH = (
     Path(__file__).parents[1] / "resources" / "variable_reference.tsv"
