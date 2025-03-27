@@ -18,7 +18,7 @@ from icu_features.constants import (
 def load(
     sources: list[str],
     outcome: str,
-    data_dir: str,
+    data_dir: str | Path,
     split: str | None = None,
     variables: list[str] | None = None,
     categorical_features: list[str] | None = None,
@@ -40,7 +40,7 @@ def load(
         The sources to load data from. E.g., ['eicu', 'mimic', 'sic'].
     outcome : str
         The outcome variable. E.g., `"mortality_at_24h"`.
-    data_dir : str
+    data_dir : str or pathlib.Path
         The directory containing the data.
     split : str, optional, default = None
         Either `"train"`, `"val"`, `"train_val"`, or `"test"`. If `None`, all data is
@@ -182,6 +182,9 @@ def features(
     )
 
     features = []
+
+    if variables is not None:
+        variables = variables.copy()
 
     for row in variable_reference.rows(named=True):
         variable = row["VariableTag"]
