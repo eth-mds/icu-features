@@ -579,49 +579,83 @@ def outcomes():
     # kidney_failure_at_48h
     # The patient has a kidney failure if they are in stage 3 according to
     # https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
-    relative_creatine = pl.col("crea") / pl.col("crea").shift(1).rolling_min(
-        window_size=7 * 24, min_samples=1
+    def kdigo_3(crea, crea_baseline, urine_rate, weight, crrt):
+        """Compute the KDIGO stage 3 kidney failure label."""
+        # AKI 1 is
+        # - max absolute creatinine increase of 0.3 within 48h or
+        # - a relative creatinine increase of 1.5.
+        creatine_min_48 = crea.rolling_min(window_size=48, min_samples=1)
+        creatine_max_48 = crea.rolling_max(window_size=48, min_samples=1)
+        creatine_change_48 = creatine_max_48 - creatine_min_48
+        aki_1 = polars_nan_or(creatine_change_48 >= 0.3, crea / crea_baseline >= 1.5)
+
+        # AKI 3 is any of the following:
+        # - a relative creatine increase of 3.0 x baseline
+        # - AKI 1 and creatinine >= 4.0
+        # - not more than 0.3ml/kg/h urine rate for 24h
+        # - no urine for 12h
+        # - initiation of renal replacement therapy (crrt)
+        good_urine_rate = ((urine_rate / weight) >= 0.3).cast(pl.Int32)
+        low_urine_rate_24 = ~(good_urine_rate.rolling_sum(24, min_samples=1).gt(0))
+
+        # high_creatine is True if aki_1 is True and creatine >= 4 (neither missing).
+        # False if either aki_1 is False or creatine < 4. Else, missing.
+        high_creatine = ~polars_nan_or(~aki_1, ~crea.gt(4))
+
+        # anuria True if the urine_rate is consistently equal to 0 for 12 hours. False
+        # if it is ever above 0. If all values are missing, the result is missing.
+        not_anuria = pl.col("urine_rate").gt(0).cast(pl.Int32)
+        anuria = ~(not_anuria.rolling_sum(window_size=12, min_samples=1).gt(0))
+
+        aki_3 = polars_nan_or(
+            crrt.replace(False, None).ffill(),
+            (crea / crea_baseline) >= 3.0,
+            high_creatine,
+            low_urine_rate_24,
+            anuria,
+        )
+
+        # If the weight is missing, the patient could only ever have a positive label, as
+        # urine related conditions are always missing. We thus set the label to missing.
+        aki_3 = pl.when(weight.is_null()).then(None).otherwise(aki_3)
+
+        return aki_3
+
+    aki_3 = kdigo_3(
+        pl.col("crea"),
+        pl.col("crea").shift(1).rolling_min(7 * 24, min_samples=1),
+        pl.col("urine_rate"),
+        pl.col("weight"),
+        pl.col("ufilt_ind"),
     )
-
-    # AKI 1 is
-    # - max absolute creatinine increase of 0.3 within 48h or
-    # - a relative creatinine increase of 1.5.
-    creatine_min_48 = pl.col("crea").rolling_min(window_size=48, min_samples=1)
-    creatine_max_48 = pl.col("crea").rolling_max(window_size=48, min_samples=1)
-    creatine_change_48 = creatine_max_48 - creatine_min_48
-    aki_1 = polars_nan_or(creatine_change_48 >= 0.3, relative_creatine >= 1.5)
-
-    # AKI 3 is any of
-    # - a relative creatine increase of 3.0 x baseline
-    # - AKI 1 and creatinine >= 4.0
-    # - not more than 0.3ml/kg/h urine rate for 24h
-    # - no urine for 12h
-    low_urine_rate = ((pl.col("urine_rate") / pl.col("weight")) < 0.3).cast(pl.Int32)
-    low_urine_rate_24 = low_urine_rate.rolling_sum(window_size=24, min_samples=1).eq(24)
-
-    # True if aki_1 is True and creatine >= 4 (neither missing). False if either aki_1
-    # is False or creatine < 4. Else, missing.
-    high_creatine = ~polars_nan_or(~aki_1, ~pl.col("crea").gt(4))
-    # True if the urine_rate is consistently equal to 0 for 12 hours. False if it is
-    # ever above 0. If all values are missing, the result is missing.
-    anuria = (
-        pl.col("urine_rate")
-        .eq(0)
-        .cast(pl.Int32)
-        .rolling_sum(window_size=12, min_samples=1)
-        .eq(12)
-    )
-
-    aki_3 = polars_nan_or(
-        relative_creatine >= 3.0,
-        high_creatine,
-        low_urine_rate_24,
-        anuria,
-    )
-    # If the weight is missing, the patient could only ever have a positive label, as
-    # urine related conditions are always missing. We thus set the label to missing.
-    aki_3 = pl.when(pl.col("weight").is_null()).then(None).otherwise(aki_3)
     kidney_failure_at_48h = eep_label(aki_3, 48).alias("kidney_failure_at_48h")
+
+    # Kidney failure, motivated by Lyu et al. 2024:
+    # https://www.medrxiv.org/content/10.1101/2024.02.01.24302063v1
+    # Similarly to circulatory_failure_8h_hyland, we linearly interpolate creatine
+    # values. We only interpolate if the time difference between two consecutive
+    # creatine measurements is less than 48 hours. We ffill and bfill the first and last
+    # measurements.
+    time = pl.when(pl.col("crea").notna()).then(pl.col("time_hours"))
+    interpolate = time.bfill() - time.ffill() < 48
+    crea = pl.coalesce(
+        pl.when(interpolate).then(pl.col("crea").interpolate(method="linear")),
+        pl.when(pl.col("time").le(time.min())).then(pl.col("crea").bfill(48)),
+        pl.when(pl.col("time").ge(time.max())).then(pl.col("crea").ffill(48)),
+    )
+    crea_baseline = pl.when(
+        pl.col("time").le(7 * 24).then(crea.head(7 * 24).min())
+    ).otherwise(crea.rolling_min(7 * 24, min_samples=1))
+    urine_rate = pl.col("urine_rate").bfill(48)
+
+    aki_3 = kdigo_3(
+        crea,
+        crea_baseline,
+        urine_rate,
+        pl.col("weight"),
+        pl.col("ufilt_ind"),
+    )
+    kidney_failure_at_48h_lyu = eep_label(aki_3, 48).alias("kidney_failure_at_48h_lyu")
 
     # log(lactate) in 4 hours. This is 1/2 the forecast horizon of circ. failure eep.
     log_lactate_in_4h = (
@@ -656,6 +690,7 @@ def outcomes():
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_hyland,
         kidney_failure_at_48h,
+        kidney_failure_at_48h_lyu,
         log_lactate_in_4h,
         log_rel_urine_rate_in_2h,
         log_pf_ratio_in_12h,
