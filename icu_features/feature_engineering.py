@@ -18,9 +18,7 @@ VARIABLE_REFERENCE_PATH = Path(__file__).parents[1] / "resources" / "variables.t
 HORIZONS = [8, 24, 72]
 CAT_MISSING_NAME = "(MISSING)"
 
-variable_reference = pl.read_csv(
-    VARIABLE_REFERENCE_PATH, separator="\t", null_values=["None"]
-).filter(pl.col("DatasetVersion").is_not_null())
+variables = pl.read_csv(VARIABLE_REFERENCE_PATH, separator="\t", null_values=["None"])
 
 
 def switch(col, bounds, values):
@@ -673,11 +671,9 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
     dyn = dyn.join(time_ranges, on=["stay_id", "time_hours"], how="full", coalesce=True)
     dyn = dyn.sort(["stay_id", "time_hours"])
 
-    dyn = dyn.with_columns(additional_variables())
-
     expressions = ["time_hours", "anchoryear", "carevue", "metavision", "patient_id"]
 
-    for row in variable_reference.rows(named=True):
+    for row in variables.rows(named=True):
         tag = row["VariableTag"]
         col = pl.col(tag).clip(row["LowerBound"], row["UpperBound"])
 
