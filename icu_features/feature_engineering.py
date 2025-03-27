@@ -6,8 +6,6 @@ import click
 import numpy as np
 import polars as pl
 
-from icu_features.load import features
-
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
@@ -627,7 +625,7 @@ def outcomes():
 @click.command()
 @click.option("--dataset", type=str, required=True)
 @click.option("--data_dir", type=str, default=None)
-def main(dataset: str, data_dir: str | Path | None):  # noqa D
+def main(dataset: str, data_dir: str | Path):  # noqa D
     logger.info(f"dataset: {dataset}")
     data_dir = Path(data_dir)
 
@@ -721,7 +719,9 @@ def main(dataset: str, data_dir: str | Path | None):  # noqa D
 
     q = dyn.group_by("stay_id").agg(expressions).explode(pl.exclude("stay_id"))
 
-    q = q.with_columns(  # these hashes are useful for subsetting
+    # These hashes are useful for subsetting. .hash() returns a u64-int. By normalizing
+    # with 2**64, we get a pseudo-random float between 0 and 1.
+    q = q.with_columns(
         (pl.col("stay_id").hash() / 2.0**64).alias("stay_id_hash"),
         (pl.col("patient_id").hash() / 2.0**64).alias("patient_id_hash"),
     ).with_columns(
