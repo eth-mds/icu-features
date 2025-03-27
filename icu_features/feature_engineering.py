@@ -579,7 +579,7 @@ def outcomes():
     # kidney_failure_at_48h
     # The patient has a kidney failure if they are in stage 3 according to
     # https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
-    def kdigo_3(crea, crea_baseline, urine_rate, weight, crrt):
+    def kdigo_3(crea, crea_baseline, rel_urine_rate, crrt):
         """Compute the KDIGO stage 3 kidney failure label."""
         # AKI 1 is
         # - max absolute creatinine increase of 0.3 within 48h or
@@ -595,7 +595,7 @@ def outcomes():
         # - not more than 0.3ml/kg/h urine rate for 24h
         # - no urine for 12h
         # - initiation of renal replacement therapy (crrt)
-        good_urine_rate = ((urine_rate / weight) >= 0.3).cast(pl.Int32)
+        good_urine_rate = (rel_urine_rate >= 0.3).cast(pl.Int32)
         low_urine_rate_24 = ~(good_urine_rate.rolling_sum(24, min_samples=1).gt(0))
 
         # high_creatine is True if aki_1 is True and creatine >= 4 (neither missing).
@@ -615,17 +615,12 @@ def outcomes():
             anuria,
         )
 
-        # If the weight is missing, the patient could only ever have a positive label, as
-        # urine related conditions are always missing. We thus set the label to missing.
-        aki_3 = pl.when(weight.is_null()).then(None).otherwise(aki_3)
-
         return aki_3
 
     aki_3 = kdigo_3(
         pl.col("crea"),
         pl.col("crea").shift(1).rolling_min(7 * 24, min_samples=1),
-        pl.col("urine_rate"),
-        pl.col("weight"),
+        pl.col("rel_urine_rate"),
         pl.col("ufilt_ind"),
     )
     kidney_failure_at_48h = eep_label(aki_3, 48).alias("kidney_failure_at_48h")
@@ -651,8 +646,7 @@ def outcomes():
     aki_3 = kdigo_3(
         crea,
         crea_baseline,
-        urine_rate,
-        pl.col("weight"),
+        urine_rate / pl.col("weight"),
         pl.col("ufilt_ind"),
     )
     kidney_failure_at_48h_lyu = eep_label(aki_3, 48).alias("kidney_failure_at_48h_lyu")
