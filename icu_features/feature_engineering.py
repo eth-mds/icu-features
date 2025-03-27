@@ -494,7 +494,11 @@ def outcomes():
 
     # respiratory failure label with simple imputation of po2 and fio2, related to
     # Hueser et al., 2024 https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
-    pf_ratio = 100 * pl.col("po2").ffill(1).bfill(1) / pl.col("fio2").ffill(1).bfill(1)
+    pf_ratio = (
+        100
+        * pl.col("po2").forward_fill(1).backward_fill(1)
+        / pl.col("fio2").forward_fill(1).backward_fill(1)
+    )
     events = pf_ratio < RESP_PF_DEF_TSH
     resp_failure_at_24h_hueser = eep_label(events, 24, switches_only=False).alias(
         "respiratory_failure_at_24h_hueser"
@@ -546,23 +550,25 @@ def outcomes():
     # consecutive lactate measurements is less than 6 hours, or if both lactate values
     # are either above or below 2, we linearly interpolate the lactate value. Else, we
     # fill the value forward and backward for 6 hours.
-    time = pl.when(pl.col("lact").notna()).then(pl.col("time_hours"))
-    interp = (time.bfill() - time.ffill() < 6) | (bad_lact.ffill() == bad_lact.bfill())
+    time = pl.when(pl.col("lact").is_not_null()).then(pl.col("time_hours"))
+    interp = (time.backward_fill() - time.forward_fill() < 6) | (
+        bad_lact.forward_fill() == bad_lact.backward_fill()
+    )
     lact_interp = (
         pl.when(interp)
         .then(pl.col("lact").interpolate(method="linear"))
-        .otherwise(pl.col("lact").bfill(3).ffill(3))
+        .otherwise(pl.col("lact").backward_fill(3).forward_fill(3))
     )
     # On the boundary, if the first value of lactate is above the threshold ("bad"), we
     # fill backwards indefinitely. If the last value is above the threshold, fill
     # forward indefinitely.
     lact_interp = pl.coalesce(
         lact_interp,
-        pl.when(pl.col("time").le(time.min()) & bad_lact.bfill()).then(
-            lact_interp.ffill()
+        pl.when(pl.col("time").le(time.min()) & bad_lact.backward_fill()).then(
+            lact_interp.forward_fill()
         ),
-        pl.when(pl.col("time").ge(time.max()) & bad_lact.ffill()).then(
-            lact_interp.bfill()
+        pl.when(pl.col("time").ge(time.max()) & bad_lact.forward_fill()).then(
+            lact_interp.backward_fill()
         ),
     )
     bad_lact_interp = lact_interp >= HIGH_LACT_TSH
@@ -581,6 +587,8 @@ def outcomes():
     # https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
     def kdigo_3(crea, crea_baseline, rel_urine_rate, crrt):
         """Compute the KDIGO stage 3 kidney failure label."""
+        crea_baseline = crea.shift(1).rolling_min(7 * 24, min_samples=1)
+
         # AKI 1 is
         # - max absolute creatinine increase of 0.3 within 48h or
         # - a relative creatinine increase of 1.5.
@@ -607,19 +615,16 @@ def outcomes():
         not_anuria = pl.col("urine_rate").gt(0).cast(pl.Int32)
         anuria = ~(not_anuria.rolling_sum(window_size=12, min_samples=1).gt(0))
 
-        aki_3 = polars_nan_or(
-            crrt.replace(False, None).ffill(),
+        return polars_nan_or(
+            crrt.cast(pl.Boolean).replace(False, None).forward_fill(),
             (crea / crea_baseline) >= 3.0,
             high_creatine,
             low_urine_rate_24,
             anuria,
         )
 
-        return aki_3
-
     aki_3 = kdigo_3(
         pl.col("crea"),
-        pl.col("crea").shift(1).rolling_min(7 * 24, min_samples=1),
         pl.col("rel_urine_rate"),
         pl.col("ufilt_ind"),
     )
@@ -631,21 +636,17 @@ def outcomes():
     # values. We only interpolate if the time difference between two consecutive
     # creatine measurements is less than 48 hours. We ffill and bfill the first and last
     # measurements.
-    time = pl.when(pl.col("crea").notna()).then(pl.col("time_hours"))
-    interpolate = time.bfill() - time.ffill() < 48
+    time = pl.when(pl.col("crea").is_not_null()).then(pl.col("time_hours"))
+    interpolate = time.backward_fill() - time.forward_fill() < 48
     crea = pl.coalesce(
         pl.when(interpolate).then(pl.col("crea").interpolate(method="linear")),
-        pl.when(pl.col("time").le(time.min())).then(pl.col("crea").bfill(48)),
-        pl.when(pl.col("time").ge(time.max())).then(pl.col("crea").ffill(48)),
+        pl.when(pl.col("time").le(time.min())).then(pl.col("crea").backward_fill(48)),
+        pl.when(pl.col("time").ge(time.max())).then(pl.col("crea").forward_fill(48)),
     )
-    crea_baseline = pl.when(
-        pl.col("time").le(7 * 24).then(crea.head(7 * 24).min())
-    ).otherwise(crea.rolling_min(7 * 24, min_samples=1))
-    urine_rate = pl.col("urine_rate").bfill(48)
+    urine_rate = pl.col("urine_rate").backward_fill(48)
 
     aki_3 = kdigo_3(
         crea,
-        crea_baseline,
         urine_rate / pl.col("weight"),
         pl.col("ufilt_ind"),
     )
@@ -653,30 +654,32 @@ def outcomes():
 
     # hyperglycemia_at_8h and hypoglycemia_at_8h according to Mehdizavareha et al.,
     # https://arxiv.org/pdf/2411.01418
-    hyperglycemia_event = pl.col("glucose") > 180  # mg/dl
-    hypoglycemia_event = pl.col("glucose") < 70  # mg/dl
+    hyperglycemia_event = pl.col("glu") > 180  # mg/dl
+    hypoglycemia_event = pl.col("glu") < 70  # mg/dl
     hyperglycemia_at_8h = eep_label(hyperglycemia_event, 8).alias("hyperglycemia_at_8h")
     hypoglycemia_at_8h = eep_label(hypoglycemia_event, 8).alias("hypoglycemia_at_8h")
 
     # Liver failure according to
     # - MELD score > 30: https://en.wikipedia.org/wiki/Model_for_End-Stage_Liver_Disease
     # - SOFA score >= 3: https://en.wikipedia.org/wiki/SOFA_score
-    crea = pl.col("crea").ffill(1).bfill(1)
-    crea = pl.coalesce(
-        pl.when(pl.col("ufilt_ind").replace(False, None).ffill(7 * 24)).then(4),
-        pl.col("crea").ffill(1).bfill(1),
+    crea = (
+        pl.when(
+            pl.col("ufilt_ind")
+            .cast(pl.Boolean)
+            .replace(False, None)
+            .forward_fill(7 * 24)
+        )
+        .then(4.0)
+        .otherwise(pl.col("crea").forward_fill(1).backward_fill(1))
     )
-    bili = pl.col("bili").ffill(1).bfill(1).clip(1, None)
-    inr = pl.col("inr").ffill(1).bfill(1).clip(1, None)
+    bili = pl.col("bili").forward_fill(1).backward_fill(1).clip(1, None)
+    inr = pl.col("inr_pt").forward_fill(1).backward_fill(1).clip(1, None)
     meld_score = 3.78 * crea.log() + 11.2 * inr.log() + 9.57 * bili.log() + 6.43
     meld_event = meld_score > 30
     severe_meld_at_48h = eep_label(meld_event, 48).alias("severe_meld_at_48h")
 
-    sofa3 = pl.col("bili").ffill(1).bfill(1) > 6.0
+    sofa3 = pl.col("bili").forward_fill(1).backward_fill(1) > 6.0
     sofa3_at_48h = eep_label(sofa3, 48).alias("sofa3_at_48h")
-
-    # Sepsis
-    sepsis_at_8h = eep_label(pl.col("sepsis").fill_null(False), 8).alias("sepsis_at_8h")
 
     # log(lactate) in 4 hours. This is 1/2 the forecast horizon of circ. failure eep.
     log_lactate_in_4h = (
@@ -701,7 +704,6 @@ def outcomes():
         hypoglycemia_at_8h,
         severe_meld_at_48h,
         sofa3_at_48h,
-        sepsis_at_8h,
         log_lactate_in_4h,
         log_pf_ratio_in_12h,
     ]
