@@ -670,10 +670,13 @@ def outcomes():
     inr = pl.col("inr").ffill(1).bfill(1).clip(1, None)
     meld_score = 3.78 * crea.log() + 11.2 * inr.log() + 9.57 * bili.log() + 6.43
     meld_event = meld_score > 30
-    severe_meld_in_48h = eep_label(meld_event, 48).alias("severe_meld_in_48h")
+    severe_meld_at_48h = eep_label(meld_event, 48).alias("severe_meld_at_48h")
 
     sofa3 = pl.col("bili").ffill(1).bfill(1) > 6.0
-    sofa3_in_48h = eep_label(sofa3, 48).alias("sofa3_in_48h")
+    sofa3_at_48h = eep_label(sofa3, 48).alias("sofa3_at_48h")
+
+    # Sepsis
+    sepsis_at_8h = eep_label(pl.col("sepsis").fill_null(False), 8).alias("sepsis_at_8h")
 
     # log(lactate) in 4 hours. This is 1/2 the forecast horizon of circ. failure eep.
     log_lactate_in_4h = (
@@ -696,8 +699,9 @@ def outcomes():
         kidney_failure_at_48h_lyu,
         hyperglycemia_at_8h,
         hypoglycemia_at_8h,
-        severe_meld_in_48h,
-        sofa3_in_48h,
+        severe_meld_at_48h,
+        sofa3_at_48h,
+        sepsis_at_8h,
         log_lactate_in_4h,
         log_pf_ratio_in_12h,
     ]
