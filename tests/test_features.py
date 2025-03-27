@@ -161,7 +161,7 @@ def test_discrete_features(feature, input, expected):
     "feature, input, expected",
     [
         (
-            "num_nonmissing_h8",
+            "num_h8",
             [
                 None,
                 None,
@@ -180,7 +180,7 @@ def test_discrete_features(feature, input, expected):
             [0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 0],
         ),
         (
-            "any_nonmissing_h8",
+            "any_h8",
             [
                 None,
                 None,

@@ -5,11 +5,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_series_equal
 
-from icu_benchmarks.scripts.data.feature_engineering import (
-    eep_label,
-    outcomes,
-    polars_nan_or,
-)
+from icu_features.feature_engineering import eep_label, outcomes, polars_nan_or
 
 
 def to_bool(x):
@@ -17,29 +13,22 @@ def to_bool(x):
 
 
 @pytest.mark.parametrize(
-    "events, expected, horizon, switches_only",
+    "events, expected, horizon",
     [
         (
             "- 1 - - 0 0 - - - - - 0 0 0 - - 1 - 1 - 0 0 0 - 1 0 1",
             "1 - 0 0 0 - - 0 0 0 0 0 1 1 1 1 - - - 0 1 1 1 1 - 1 -",
             4,
-            True
         ),
-        (
-            "- 1 - - 0 0 - - - - - 0 0 0 - - 1 - 1 - 0 0 0 - 1 0 1",
-            "1 - 0 0 0 - - 0 0 0 0 0 1 1 1 1 - 1 - 0 1 1 1 1 - 1 -",
-            4,
-            False
-        )
     ],
 )
-def test_eep_labels(events, expected, horizon, switches_only):
+def test_eep_labels(events, expected, horizon):
     df = pl.DataFrame(
         {
             "events": to_bool(events),
             "expected": to_bool(expected),
         }
-    ).with_columns(eep_label(pl.col("events"), horizon, switches_only).alias("labels"))
+    ).with_columns(eep_label(pl.col("events"), horizon).alias("labels"))
     assert_series_equal(df["labels"], df["expected"], check_names=False)
 
 
@@ -117,24 +106,23 @@ def test_polars_nan_or(args, expected):
             pl.Series(24 * [None] + [4.0] + 71 * [None]),
         ),
         (
-            "log_lactate_in_1h",
+            "log_lactate_in_4h",
             pl.DataFrame(
                 {
-                    "log_lact": [None, -1.0, 2.1, None, None, 1.2, 0.0, None],
-                    "time_hours": np.arange(0, 8),
+                    "lact": 4 * [None]
+                    + [
+                        np.exp(-1.0) - 0.1,
+                        np.exp(2.1) - 0.1,
+                        None,
+                        None,
+                        np.exp(1.2) - 0.1,
+                        np.exp(0.0) - 0.1,
+                        None,
+                    ],
+                    "time_hours": np.arange(0, 11),
                 }
             ),
-            pl.Series([-1.0, 2.1, None, None, 1.2, 0.0, None, None]),
-        ),
-        (
-            "log_creatine_in_1h",
-            pl.DataFrame(
-                {
-                    "log_crea": [None, -1.0, 2.1, None, None, 1.2, 0.0, None],
-                    "time_hours": np.arange(0, 8),
-                }
-            ),
-            pl.Series([-1.0, 2.1, None, None, 1.2, 0.0, None, None]),
+            pl.Series([-1.0, 2.1, None, None, 1.2, 0.0] + 5 * [None]),
         ),
     ],
 )
@@ -153,18 +141,7 @@ def test_outcomes(outcome_name, input, expected):
             "respiratory_failure_at_24h",
             pl.DataFrame(
                 {
-                    "po2": [None] * 12
-                    + [200] * 12
-                    + [None] * 12
-                    + [50] * 12
-                    + [None] * 24
-                    + [150] * 12,
-                    "fio2": [1.0] * 12
-                    + [None] * 12
-                    + [None] * 12
-                    + [50] * 12
-                    + [50] * 24
-                    + [50] * 12,
+                    "pf_ratio": [None] * 36 + [100] * 12 + [None] * 24 + [500] * 12,
                 }
             ),
             pl.Series([None] * 36 + [True] * 12 + [None] * 24 + [False] * 12),
