@@ -1,156 +1,149 @@
-VariableID	VariableTag	VariableName	VariableType	DatasetVersion	OrganSystem	TreatmentGroups	Unit	DataType	LowerBound	UpperBound	Description	LogTransform	LogTransformEps	PossibleValues	TreatmentDetailLevel
-1	map	Mean Arterial Blood Pressure	observation	v0.0	circulatory	None	mmHg	continuous	0.0	250.0	Arterial blood pressure measurement	False	None	None	None
-2	lact	Lactate	observation	v0.0	circulatory	None	mmol/L	continuous	0.0	50.0	Lactate in blood by test	True	0.1	None	None
-3	age	Age	static	v0.0	demographic	None	years	continuous	0.0	120.0	Age of a person in years	False	None	None	None
-4	weight	Weight	static	v0.0	demographic	None	kg	continuous	1.0	500.0	Body weight of a person	False	None	None	None
-5	sex	Sex	static	v0.0	demographic	None	None	categorical	None	None	Gender of a person, male, female, not-observed	False	None	["Female", "Male"]	None
-6	height	Height	static	v0.0	demographic	None	cm	continuous	10.0	250.0	Body height of a person	False	None	None	None
-7	hr	Heart Rate	observation	v0.0	circulatory	None	bpm	continuous	0.0	300.0	Heart rate	False	None	None	None
-8	fio2	FiO2	observation	v0.0	respiratory	None	%	continuous	21.0	100.0	Fraction of insipred oxygen	False	None	None	None
-9	resp	Respiratory Rate	observation	v0.0	respiratory	None	insp/min	continuous	0.0	120.0	Respiratory rate as inspirations per minute	True	1.0	None	None
-10	temp	Temperature	observation	v0.0	infection	None	C	continuous	28.0	44.0	Body temperature	False	None	None	None
-11	crea	Creatinine	observation	v0.0	metabolic_renal	None	mg/dL	continuous	0.0	15.0	Creatinine in blood sample	True	0.1	None	None
-12	urine_rate	Urine Rate per Hour	observation	v0.0	metabolic_renal	None	mL/h	continuous	0.0	3000.0	Urine output per hour (rate)	True	0.1	None	None
-13	po2	Partial Pressure of Oxygen	observation	v0.0	respiratory	None	mmHg	continuous	30.0	600.0	Partial pressure of oxygen in the blood	True	0.0	None	None
-14	ethnic	Ethnic Group	static	v0.0	demographic	None	None	categorical	None	None	Ethnic Group	False	None	["asian", "black", "white", "other"]	None
-15	alb	Albumin	observation	v0.0	gastrointestinal	None	g/dL	continuous	0.0	6.0	Main protein of human blood plasma	False	None	None	None
-16	alp	Alkaline Phosphatase	observation	v0.0	gastrointestinal	None	IU/L	continuous	0.0	4000.0	Leukemia related test	True	1.0	None	None
-17	alt	Alanine Aminotransferase	observation	v0.0	gastrointestinal	None	IU/L	continuous	0.0	10000.0	GI related test	True	0.1	None	None
-18	ast	Aspartate Aminotransferase	observation	v0.0	gastrointestinal	None	IU/L	continuous	0.0	10000.0	GI and muscle related test	True	0.1	None	None
-19	be	Base excess	observation	v0.0	metabolic_renal	None	mmol/l	continuous	-25.0	25.0	Base excess is defined as the amount of strong acid that must be added to each liter of fully oxygenated blood to return the pH to 7.40.	False	None	None	None
-20	bicar	Bicarbonate	observation	v0.0	metabolic_renal	None	mmol/l	continuous	5.0	50.0	Metabolism related	False	None	None	None
-21	bili	Total Bilirubin	observation	v0.0	gastrointestinal	None	mg/dL	continuous	0.0	100.0	High Bilirubin values can indicate increased decomposition of red blood cells	True	0.01	None	None
-22	bili_dir	Bilirubin Direct	observation	v0.0	gastrointestinal	None	mg/dL	continuous	0.0	50.0	High Bilirubin values can indicate increased decomposition of red blood cells	True	0.01	None	None
-23	bnd	Band form neutrophils	observation	v0.0	infection	None	%	continuous	0.0	100.0	High value indicates inflammation or infection	True	0.1	None	None
-24	bun	Blood urea nitrogen	observation	v0.0	metabolic_renal	None	mg/dL	continuous	0.0	200.0	High values indicate kidney complications	True	1.0	None	None
-25	ca	Calcium	observation	v0.0	metabolic_renal	None	mg/dL	continuous	4.0	20.0	None	False	None	None	None
-26	cai	Calcium Ionized	observation	v0.0	metabolic_renal	None	mmol/L	continuous	0.5	2.0	None	False	None	None	None
-27	ck	Creatine Kinase	observation	v0.0	circulatory	None	IU/L	continuous	0.0	1000000.0	None	True	0.1	None	None
-28	ckmb	Creatine Kinase MB	observation	v0.0	circulatory	None	ng/mL	continuous	0.0	2500.0	None	True	0.1	None	None
-29	cl	Chloride	observation	v0.0	metabolic_renal	None	mmol/l	continuous	80.0	130.0	None	False	None	None	None
-30	crp	C-reactive protein	observation	v0.0	infection	None	mg/L	continuous	0.0	2000.0	Inflammation marker	True	0.01	None	None
-31	dbp	Diastolic blood pressure	observation	v0.0	circulatory	None	mmHg	continuous	0.0	200.0	Diastolic blood pressure, blood pressure when heart rests	False	None	None	None
-32	fgn	Fibrinogen	observation	v0.0	circulatory	None	mg/dL	continuous	0.0	1500.0	None	False	None	None	None
-33	glu	Glucose	observation	v0.0	metabolic_renal	None	mg/dL	continuous	0.0	1000.0	None	False	None	None	None
-34	hgb	Hemoglobin	observation	v0.0	circulatory	None	g/dL	continuous	4.0	18.0	Oxygen carrying protein	False	None	None	None
-35	inr_pt	Prothrombin	observation	v0.0	circulatory	None	None	continuous	0.0	50.0	Prothrombin time/international normalized ratio	True	0.01	None	None
-36	k	Potassium	observation	v0.0	metabolic_renal	None	mmol/l	continuous	0.0	10.0	None	False	None	None	None
-37	lymph	Lymphocytes	observation	v0.0	infection	None	%	continuous	0.0	100.0	White blood cells	True	0.1	None	None
-38	mch	Mean corpuscular hemoglobin	observation	None	None	None	pg	continuous	0	1000	Average amount of hemoglobin in the average red cell	FALSE	None	None	None
-39	mchc	Mean corpuscular hemoglobin concentration	observation	None	None	None	%	continuous	20	50	Average amount of hemoglobin in the average red cell in a given volume of blood	FALSE	None	None	None
-40	mcv	Mean corpuscular volume	observation	None	None	None	fL	continuous	50	150	Average size of red blood cells	FALSE	None	None	None
-41	methb	Methemoglobin	observation	v0.0	circulatory	None	%	continuous	0.0	100.0	A product of hemoglobin produced by oxidation	True	0.01	None	None
-42	mg	Magnesium	observation	v0.0	metabolic_renal	None	mg/dL	continuous	0.5	5.0	None	False	None	None	None
-43	na	Sodium	observation	v0.0	metabolic_renal	None	mmol/l	continuous	90.0	200.0	None	False	None	None	None
-44	neut	Neutrophils	observation	v0.0	infection	None	%	continuous	0.0	100.0	Granular leukocytes	False	None	None	None
-45	pco2	CO2 partial pressure	observation	v0.0	respiratory	None	mmHg	continuous	10.0	150.0	measure of carbon dioxide within arterial or venous blood.	False	None	None	None
-46	ph	pH of blood	observation	v0.0	metabolic_renal	None	None	continuous	6.8	8.0	pH of blood sample	False	None	None	None
-47	phos	Phosphate	observation	v0.0	metabolic_renal	None	mg/dL	continuous	0.0	40.0	None	True	0.1	None	None
-48	plt	Platelet Count	observation	v0.0	circulatory	None	G/l	continuous	5.0	1200.0	Blood component reacting to bleeding, wound healing	True	0.0	None	None
-49	ptt	Partial thromboplastin time	observation	v0.0	circulatory	None	sec	continuous	0.0	250.0	Blood test that looks at how long it takes for blood to clot	True	0.01	None	None
-50	sbp	Systolic blood pressure	observation	v0.0	circulatory	None	mmHg	continuous	0.0	300.0	Blood pressure during heart beat	False	None	None	None
-51	tnt	Troponin t	observation	v0.0	circulatory	None	ng/mL	continuous	0.0	100.0	None	True	0.001	None	None
-52	wbc	White blood cell count	observation	v0.0	infection	None	G/l	continuous	0.0	1000.0	White blood cell count	True	0.01	None	None
-53	basos	Basophils	observation	v0.0	infection	None	%	continuous	0.0	50.0	Granular leukocytes	True	0.1	None	None
-54	eos	Eosinophils	observation	v0.0	infection	None	%	continuous	0.0	50.0	Granular leukocytes	True	0.01	None	None
-55	mgcs	Glasgow Comma Scale Motor	observation	v0.0	neuro	None	None	continuous	1.0	6.0	Glasgow Comma Scale Motor	False	None	[1, 2, 3, 4, 5, 6]	None
-56	tgcs	Glasgow Comma Scale Total	observation	v0.0	neuro	None	None	continuous	3.0	15.0	Glasgow Comma Scale Total	False	None	[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]	None
-57	vgcs	Glasgow Comma Scale Verbal	observation	v0.0	neuro	None	None	continuous	1.0	5.0	Glasgow Comma Scale Verbal	False	None	[1, 2, 3, 4, 5]	None
-58	egcs	Glasgow Comma Scale Eye 	observation	v0.0	neuro	None	None	continuous	1.0	4.0	Glasgow Comma Scale Eye	False	None	[1, 2, 3, 4]	None
-59	hct	Hematocrit	observation	v0.0	circulatory	None	%	continuous	10.0	80.0	The volume of packed red blood cells in a blood specimen	False	None	None	None
-60	rbc	Red blood cell count	observation	v0.0	circulatory	None	m/uL	continuous	0.0	20.0	Red blood cell count	True	0.1	None	None
-61	tri	Troponin I	observation	v0.0	circulatory	None	ng/mL	continuous	0.0	500.0	None	True	0.001	None	None
-62	etco2	Endtital CO2	observation	v0.0	respiratory	None	mmHg	continuous	10.0	60.0	Largest measured CO2 concentration, usually at exhalation	False	None	None	None
-63	rass	Richmond Agitation Sedation Scale	observation	v0.0	neuro	None	None	continuous	-5.0	4.0	Scale used to measure the agitation or sedation level of a person	False	None	[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]	None
-64	hbco	Carboxyhemoglobin	observation	v0.0	circulatory	None	None	continuous	0.0	100.0	Hemoglobin in which the sites usually bound to oxygen are bound to carbon monoxide.	True	0.1	None	None
-65	esr	Erythrocyte sedimentation rate	observation	v0.0	infection	None	None	continuous	0.0	200.0	Erythrocyte sedimentation rate	True	0.1	None	None
-66	pt	Prothrombine time	observation	None	circulatory	None	sec	continuous	0	250	Prothrombine time	TRUE	0.1	None	None
-67	tco2	Totcal CO2	observation	None	None	None	mEq/L	continuous	5	60	Total Serum CO2	FALSE	None	None	None
-68	adm	Patient admission type	static	v0.0	demographic	None	None	categorical	None	None	Patient admission type	False	None	"[""surg"", ""med"", ""other""]"	None
-69	hba1c	Hemoglobin A1C	observation	v0.0	metabolic_renal	None	%	continuous	0.0	100.0	A1C is a blood test for type 2 diabetes and prediabetes.	True	0.01	None	None
-70	rdw	Erythrocyte distribution width	observation	None	None	None	%	continuous	0	100	A measure of the variability in size of circulating ERYTHROCYTE.	FALSE	None	None	None
-71	samp	Body fluid sampling, detected bacterial growth	observation	v0.0	infection	None	None	categorical	None	None	Body fluid sampling, testing for bacterial infection, True/False/Missing	False	None	[false, true]	None
-72	spo2	Pulse Oxymetry Oxygen Saturation	observation	v0.0	respiratory	None	%	continuous	50.0	100.0	Pulse oxymetry measured blood oxygen saturation	False	None	None	None
-73	sao2	Oxygen saturation in arterial blood	observation	v0.0	respiratory	None	%	continuous	50.0	100.0	Oxygen saturation in arterial blood as determined by blood sample	False	None	None	None
-74	urine	Cumulative Urine	observation	None	metabolic_renal	None	mL	continuous	0	7000	Cumulative urine measurements	FALSE	None	None	None
-75	icp	Intra cranial pressure	observation	v0.1	neuro	None	mmHg	continuous	-10.0	90.0	Intra cranial pressure	False	None	None	None
-76	cout	Cardiac output	observation	v0.1	circulatory	None	l/min	continuous	0.0	20.0	Cardiac output	False	None	None	None
-77	mpap	mean pulmonal arterial pressure	observation	v0.1	circulatory	None	mmHg	continuous	0.0	100.0	mean Pulmonal arterial pressure	False	None	None	None
-78	spap	systolic pulmonal arterial pressure	observation	v0.1	circulatory	None	mmHg	continuous	5.0	120.0	Systolic pulmonal arterial pressure	False	None	None	None
-79	dpap	diastolic pulmonal arterial pressure	observation	v0.1	circulatory	None	mmHg	continuous	0.0	80.0	Diastolic pulmonal arterial pressure	False	None	None	None
-80	cvp	central venous pressure	observation	v0.1	circulatory	None	mmHg	continuous	-5.0	50.0	Blood pressure in the venea	False	None	None	None
-81	svo2	mixed venous oxygenation	observation	v0.1	circulatory	None	%	continuous	0.0	100.0	Mixed venous oxygenation, the oxygen content of the blood that returns to the heart after meeting tissue needs	False	None	None	None
-82	pcwp	pulmonary capillary wedge pressure	observation	v0.1	circulatory	None	mmHg	continuous	0.0	45.0	Pulmonary capillary wedge pressure	False	None	None	None
-83	peep	positive end expiratory pressure - mechanical ventilation	observation	v0.1	respiratory	None	cmH2O	continuous	0.0	20.0	Positive end expiratory pressure under mechanical ventilation	False	None	None	None
-84	peak	Peak pressure - mechanical ventilation	observation	v0.1	respiratory	None	cmH2O	continuous	0.0	100.0	peak pressure under mechanical ventilation	False	None	None	None
-85	plateau	Plateau pressure - mechanical ventilation	observation	v0.1	respiratory	None	cmH2O	continuous	0.0	50.0	Plateau pressure under mechanical ventilation	False	None	None	None
-86	ps	Pressure support - mechanical ventilation	observation	v0.1	respiratory	None	cmH2O	continuous	0.0	25.0	Pressure support under mechanical ventilation	False	None	None	None
-87	tv	tidal volume	observation	v0.1	respiratory	None	ml	continuous	0.0	1500.0	Tidal volume	False	None	None	None
-88	airway	type of airway ventilation	observation	v0.1	respiratory	None	None	categorical	None	None	Classes: orotracheal, suprapharyngeal, mask, tracheostomy	False	None	["orotracheal", "suprapharyngeal", "mask", "tracheostomy", "other"]	None
-89	supp_o2_vent	Supplemental Oxygen from ventilator	treatment	v0.1	respiratory	None	%	treatment_cont	0.0	20.0	Supplemental Oxygen as a ventilator setting	False	0.001	None	1.0
-90	ygt	gamma gt	observation	v0.1	gastrointestinal	None	U/L	continuous	0.0	2500.0	Gamma-glutamyl transferase (GGT) blood test	True	0.1	None	None
-91	amm	ammoniak	observation	v0.1	gastrointestinal	None	mmol/L	continuous	0.0	600.0	Ammoniak, Ammonia, NH3	True	1.0	None	None
-92	amyl	amylase	observation	v0.1	gastrointestinal	None	U/L	continuous	0.0	2000.0	Amylase	True	1.0	None	None
-93	lip	lipase	observation	v0.1	gastrointestinal	None	U/L	continuous	0.0	4000.0	Lipase	True	1.0	None	None
-94	ufilt	ultrafiltration on continuous RRT	treatment	v0.1	metabolic_renal	None	ml	treatment_cont	0.0	7000.0	RRT (Renal Replacement Therapy)	True	10.0	None	4.0
-95	ufilt_ind	ultrafiltration on continuous RRT as indicator variable	treatment	v0.1	metabolic_renal	None	None	treatment_ind	None	None	RRT (Renal Replacement Therapy)	False	None	None	3.0
-96	rel_urine_rate	Urine rate per hour by weight	observation	v1.1	metabolic_renal	None	mL/h/kg	continuous	0.0	50.0	Urine output per hour by weight (relative rate)	True	0.01	None	None
-97	pf_ratio	Ratio of PaO2 and FiO2	observation	v1.1	respiratory	None	mmHg	continuous	40.0	3000.0	Partial pressure of oxygen in the blood relative to inspured oxigen	True	0.0	None	None
-98	o2sat	Oxygen saturation (arterial blood or pulse oxymetry)	observation	v0.0	respiratory	None	%	continuous	50.0	100.0	Oxygen saturation in arterial blood as determined by blood sample, if available, and by pulse oxymetry else	False	None	None	None
-1001	dobu	dobutamine	treatment	v1.0	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	8000.0	Dobutamine as a rate	True	1.0	None	4.0
-1002	levo	levosimendan	treatment	v1.0	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	200.0	Levosimendan as a rate	True	0.1	None	4.0
-1003	norepi	norepinephrine	treatment	v1.0	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	100.0	Norepinephrine as a rate	True	0.01	None	4.0
-1004	epi	epinephrine	treatment	v1.0	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	600.0	Epinephrine as a rate	True	0.01	None	4.0
-1005	milrin	milrinone	treatment	v1.0	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	1000.0	Milrinone as a rate	True	1.0	None	4.0
-1006	teophyllin	theophylline	treatment	v1.0	circulatory	vasopressor_inotrope	mg/min	treatment_cont	0.0	100.0	Teophyllin as a rate	True	0.01	None	4.0
-1007	dopa	dopamine	treatment	v1.0	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	15000.0	Dopamine as a rate	True	1.0	None	4.0
-1008	adh	vasopressin	treatment	v1.0	circulatory	vasopressor_inotrope	U/min	treatment_cont	0.0	6.0	Vasopressin (Antidiuretic Hormone)	True	0.001	None	4.0
-1009	hep	heparin	treatment	v1.0	circulatory	anticoagulant	U/h	treatment_cont	0.0	10000.0	Heparin  as a rate	True	100.0	None	4.0
-1010	prop	propofol	treatment	v1.0	neuro	sedative_anxiolytic	mcg/min	treatment_cont	0.0	50000.0	Propofol  as a rate	True	10.0	None	4.0
-1011	benzdia	benzodiacepine	treatment	v1.0	neuro	sedative_anxiolytic	mg/h	treatment_cont	0.0	1500.0	Benzodiacepine as a rate	True	0.1	None	4.0
-1012	oth_sed_ind	other sedatives	treatment	v1.0	neuro	sedative_anxiolytic	None	treatment_ind	None	None	Any other sedative as indicator	False	None	None	3.0
-1013	op_pain_ind	opiate painkiller	treatment	v1.0	neuro	pain_killer	None	treatment_ind	None	None	Opioid Painkiller	False	None	None	3.0
-1014	nonop_pain_ind	non-opioid analgesic	treatment	v1.0	neuro	pain_killer	None	treatment_ind	None	None	Painkiller	False	None	None	3.0
-1015	paral_ind	paralytic	treatment	v1.0	neuro	paralytic	None	treatment_ind	None	None	Paralytics such as Rocuronium	False	None	None	2.0
-1016	abx_ind	antibotics	treatment	v1.0	infection	antibiotics	None	treatment_ind	None	None	Antibiotics aggregated	False	None	None	2.0
-1017	loop_diur	loop diuretic	treatment	v1.0	metabolic_renal	diuretic	mg/h	treatment_cont	0.0	500.0	Loop Diuretics as a rate	True	0.1	None	4.0
-1018	ins_ind	insulin	treatment	v1.0	None	insulin	None	treatment_ind	None	None	Insulin	False	None	None	2.0
-1019	fluid_ind	fluid administration	treatment	v1.1	None	electrolyte	None	treatment_ind	None	None	Fluid and electrolyte administration	False	None	None	2.0
-1020	inf_rbc_ind	packed red blood cells	treatment	v1.1	None	blood_products_infusion	None	treatment_ind	None	None	Packed red blood cells	False	None	None	3.0
-1021	ffp_ind	Fresh Frozen Plasma	treatment	v1.1	None	blood_products_infusion	None	treatment_ind	None	None	Fresh frozen plasma	False	None	None	3.0
-1022	plat_ind	platelets	treatment	v1.1	None	blood_products_infusion	None	treatment_ind	None	None	Platelets	False	None	None	3.0
-1023	inf_alb_ind	albumin infusion	treatment	v1.1	None	blood_products_infusion	None	treatment_ind	None	None	Albumin Infusion	False	None	None	3.0
-1024	anti_delir_ind	anti deliriant	treatment	v1.1	neuro	anti_delirant	None	treatment_ind	None	None	Anti-Deliriant	False	None	None	2.0
-1025	oth_diur_ind	other diuretics	treatment	v1.1	metabolic_renal	diuretic	None	treatment_ind	None	None	Other diuretics	False	None	None	3.0
-1026	oth_anti_coag_ind	other anticoagulants	treatment	v1.1	circulatory	anticoagulant	None	treatment_ind	None	None	Other anticoagulants	False	None	None	3.0
-1027	vasod_ind	antihypertensive and vasodilators	treatment	v1.1	circulatory	antihypertensive_vasolidators	None	treatment_ind	None	None	Antihypertensive and Vasodilators	False	None	None	2.0
-1028	anti_arrhythm_ind	antiarrhythmic	treatment	v1.1	circulatory	antiarrhythmic	None	treatment_ind	None	None	Anti-arrhythmica agents	False	None	None	2.0
-1029	dobu_ind	Dobutamine indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Dobutamine as an indicator	False	None	None	3.0
-1030	levo_ind	Levosimendan indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Levosimendan as an indicator	False	None	None	3.0
-1031	norepi_ind	Norepinephrine indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Norepinephrine as an indicator	False	None	None	3.0
-1032	epi_ind	Epinephrine	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Epinephrine as an indicator	False	None	None	3.0
-1033	milrin_ind	Milrinone indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Milrinone as an indicator	False	None	None	3.0
-1034	teophyllin_ind	theophylline indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Theophylline as an indicator	False	None	None	3.0
-1035	dopa_ind	Dopamine indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Dopamine as an indicator	False	None	None	3.0
-1036	adh_ind	Vasopressin indicator	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Vasopressin as an indicator	False	None	None	3.0
-1037	hep_ind	Heparin indicator	treatment	v1.1	circulatory	anticoagulant	None	treatment_ind	None	None	Heparin as an indicator	False	None	None	3.0
-1038	prop_ind	Propofol indicator	treatment	v1.1	circulatory	sedative_anxiolytic	None	treatment_ind	None	None	Propofol as an indicator	False	None	None	3.0
-1039	benzdia_ind	benzodiacepine indicator	treatment	v1.1	circulatory	sedative_anxiolytic	None	treatment_ind	None	None	Benzodiacepine as an indicator	False	None	None	3.0
-1040	loop_diur_ind	Loop diuretics indicator	treatment	v1.1	circulatory	diuretic	None	treatment_ind	None	None	Loop Diuretics as a rate	False	None	None	3.0
-1041	cf_treat_ind	Vasopressors and inotropes as treatments for circulatory failure	treatment	v1.1	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Any vasopressor inotrope as an indicator	False	None	None	2.0
-1042	anti_coag_ind	Any anticoagulant treatment indicator	treatment	v1.1	circulatory	anticoagulant	None	treatment_ind	None	None	Any anticoagulant as an indicator	False	None	None	2.0
-1043	sed_ind	Any sedative anxiolytic treatment indicator	treatment	v1.1	circulatory	sedative_anxiolytic	None	treatment_ind	None	None	Any sedative anxiolytic as an indicator	False	None	None	2.0
-1043	pain_killer_ind	Any painkiller treatment indicator	treatment	v1.1	circulatory	pain_killer	None	treatment_ind	None	None	Any painkiller as an indicator	False	None	None	2.0
-1044	diur_ind	Any diuretic treatment indicator	treatment	v1.1	circulatory	diuretic	None	treatment_ind	None	None	Any diuretic as an indicator	False	None	None	2.0
-1045	blood_prod_ind	Any blood products infusion treatment indicator	treatment	v1.1	circulatory	blood_products_infusion	None	treatment_ind	None	None	Any products infusion treatment as an indicator	False	None	None	2.0
-1046	vent_ind	Ventilation indicator	treatment	v2.0	respiratory	ventilation	None	treatment_ind	None	None	ventilation as an indicator	False	None	None	2.0
-2001	sofa	SOFA score	observation	v2.0	None	None	None	continuous	0	24	SOFA score based on 24h history	False	None	None	None
-2002	sofa4	SOFA score	observation	v2.0	None	None	None	continuous	0	24	SOFA score based on 4h history	False	None	None	None
-2003	qsofa	SOFA score	observation	v2.0	None	None	None	continuous	0	3	quick SOFA score based on 4h history	False	None	None	None
-2004	qsofa4	SOFA score	observation	v2.0	None	None	None	continuous	0	3	quick SOFA score based on 4h history	False	None	None	None
-2005	sofa_resp	SOFA score	observation	v2.0	None	None	None	continuous	0	4	respiratory component of the SOFA score	False	None	None	None
-2006	sofa_coag	SOFA score	observation	v2.0	None	None	None	continuous	0	4	coagulation component of the SOFA score	False	None	None	None
-2007	sofa_liver	SOFA score	observation	v2.0	None	None	None	continuous	0	4	liver component of the SOFA score	False	None	None	None
-2008	sofa_cardio	SOFA score	observation	v2.0	None	None	None	continuous	0	4	cardiovascular system component of the SOFA score	False	None	None	None
-2009	sofa_cns	SOFA score	observation	v2.0	None	None	None	continuous	0	4	central nervous system component of the SOFA score	False	None	None	None
-2010	sofa_renal	SOFA score	observation	v2.0	None	None	None	continuous	0	4	renal function component of the SOFA score	False	None	None	None
+VariableID	VariableTag	VariableName	VariableType	OrganSystem	TreatmentGroups	Unit	DataType	LowerBound	UpperBound	Description	LogTransform	LogTransformEps
+1	map	Mean Arterial Blood Pressure	observation	circulatory	None	mmHg	continuous	0.0	250.0	Arterial blood pressure measurement	false	None
+2	lact	Lactate	observation	circulatory	None	mmol/L	continuous	0.0	50.0	Lactate in blood by test	true	0.1
+3	age	Age	static	demographic	None	years	continuous	0.0	120.0	Age of a person in years	false	None
+4	weight	Weight	static	demographic	None	kg	continuous	1.0	500.0	Body weight of a person	false	None
+5	sex	Sex	static	demographic	None	None	categorical	None	None	Gender of a person, male, female, not-observed	false	None
+6	height	Height	static	demographic	None	cm	continuous	10.0	250.0	Body height of a person	false	None
+7	hr	Heart Rate	observation	circulatory	None	bpm	continuous	0.0	300.0	Heart rate	false	None
+8	fio2	FiO2	observation	respiratory	None	%	continuous	21.0	100.0	Fraction of insipred oxygen	false	None
+9	resp	Respiratory Rate	observation	respiratory	None	insp/min	continuous	0.0	120.0	Respiratory rate as inspirations per minute	true	1.0
+10	temp	Temperature	observation	infection	None	C	continuous	28.0	44.0	Body temperature	false	None
+11	crea	Creatinine	observation	metabolic_renal	None	mg/dL	continuous	0.0	15.0	Creatinine in blood sample	true	0.1
+12	urine_rate	Urine Rate per Hour	observation	metabolic_renal	None	mL/h	continuous	0.0	3000.0	Urine output per hour (rate)	true	0.1
+13	po2	Partial Pressure of Oxygen	observation	respiratory	None	mmHg	continuous	30.0	600.0	Partial pressure of oxygen in the blood	true	0.0
+14	ethnic	Ethnic Group	static	demographic	None	None	categorical	None	None	Ethnic Group	false	None
+15	alb	Albumin	observation	gastrointestinal	None	g/dL	continuous	0.0	6.0	Main protein of human blood plasma	false	None
+16	alp	Alkaline Phosphatase	observation	gastrointestinal	None	IU/L	continuous	0.0	4000.0	Leukemia related test	true	1.0
+17	alt	Alanine Aminotransferase	observation	gastrointestinal	None	IU/L	continuous	0.0	10000.0	GI related test	true	0.1
+18	ast	Aspartate Aminotransferase	observation	gastrointestinal	None	IU/L	continuous	0.0	10000.0	GI and muscle related test	true	0.1
+19	be	Base excess	observation	metabolic_renal	None	mmol/l	continuous	-25.0	25.0	Base excess is defined as the amount of strong acid that must be added to each liter of fully oxygenated blood to return the pH to 7.40.	false	None
+20	bicar	Bicarbonate	observation	metabolic_renal	None	mmol/l	continuous	5.0	50.0	Metabolism related	false	None
+21	bili	Total Bilirubin	observation	gastrointestinal	None	mg/dL	continuous	0.0	100.0	High Bilirubin values can indicate increased decomposition of red blood cells	true	0.01
+22	bili_dir	Bilirubin Direct	observation	gastrointestinal	None	mg/dL	continuous	0.0	50.0	High Bilirubin values can indicate increased decomposition of red blood cells	true	0.01
+23	bnd	Band form neutrophils	observation	infection	None	%	continuous	0.0	100.0	High value indicates inflammation or infection	true	0.1
+24	bun	Blood urea nitrogen	observation	metabolic_renal	None	mg/dL	continuous	0.0	200.0	High values indicate kidney complications	true	1.0
+25	ca	Calcium	observation	metabolic_renal	None	mg/dL	continuous	4.0	20.0	None	false	None
+26	cai	Calcium Ionized	observation	metabolic_renal	None	mmol/L	continuous	0.5	2.0	None	false	None
+27	ck	Creatine Kinase	observation	circulatory	None	IU/L	continuous	0.0	1000000.0	None	true	0.1
+28	ckmb	Creatine Kinase MB	observation	circulatory	None	ng/mL	continuous	0.0	2500.0	None	true	0.1
+29	cl	Chloride	observation	metabolic_renal	None	mmol/l	continuous	80.0	130.0	None	false	None
+30	crp	C-reactive protein	observation	infection	None	mg/L	continuous	0.0	2000.0	Inflammation marker	true	0.01
+31	dbp	Diastolic blood pressure	observation	circulatory	None	mmHg	continuous	0.0	200.0	Diastolic blood pressure, blood pressure when heart rests	false	None
+32	fgn	Fibrinogen	observation	circulatory	None	mg/dL	continuous	0.0	1500.0	None	false	None
+33	glu	Glucose	observation	metabolic_renal	None	mg/dL	continuous	0.0	1000.0	None	false	None
+34	hgb	Hemoglobin	observation	circulatory	None	g/dL	continuous	4.0	18.0	Oxygen carrying protein	false	None
+35	inr_pt	Prothrombin	observation	circulatory	None	None	continuous	0.0	50.0	Prothrombin time/international normalized ratio	true	0.01
+36	k	Potassium	observation	metabolic_renal	None	mmol/l	continuous	0.0	10.0	None	false	None
+37	lymph	Lymphocytes	observation	infection	None	%	continuous	0.0	100.0	White blood cells	true	0.1
+41	methb	Methemoglobin	observation	circulatory	None	%	continuous	0.0	100.0	A product of hemoglobin produced by oxidation	true	0.01
+42	mg	Magnesium	observation	metabolic_renal	None	mg/dL	continuous	0.5	5.0	None	false	None
+43	na	Sodium	observation	metabolic_renal	None	mmol/l	continuous	90.0	200.0	None	false	None
+44	neut	Neutrophils	observation	infection	None	%	continuous	0.0	100.0	Granular leukocytes	false	None
+45	pco2	CO2 partial pressure	observation	respiratory	None	mmHg	continuous	10.0	150.0	measure of carbon dioxide within arterial or venous blood.	false	None
+46	ph	pH of blood	observation	metabolic_renal	None	None	continuous	6.8	8.0	pH of blood sample	false	None
+47	phos	Phosphate	observation	metabolic_renal	None	mg/dL	continuous	0.0	40.0	None	true	0.1
+48	plt	Platelet Count	observation	circulatory	None	G/l	continuous	5.0	1200.0	Blood component reacting to bleeding, wound healing	true	0.0
+49	ptt	Partial thromboplastin time	observation	circulatory	None	sec	continuous	0.0	250.0	Blood test that looks at how long it takes for blood to clot	true	0.01
+50	sbp	Systolic blood pressure	observation	circulatory	None	mmHg	continuous	0.0	300.0	Blood pressure during heart beat	false	None
+51	tnt	Troponin t	observation	circulatory	None	ng/mL	continuous	0.0	100.0	None	true	0.001
+52	wbc	White blood cell count	observation	infection	None	G/l	continuous	0.0	1000.0	White blood cell count	true	0.01
+53	basos	Basophils	observation	infection	None	%	continuous	0.0	50.0	Granular leukocytes	true	0.1
+54	eos	Eosinophils	observation	infection	None	%	continuous	0.0	50.0	Granular leukocytes	true	0.01
+55	mgcs	Glasgow Comma Scale Motor	observation	neuro	None	None	continuous	1.0	6.0	Glasgow Comma Scale Motor	false	None
+56	tgcs	Glasgow Comma Scale Total	observation	neuro	None	None	continuous	3.0	15.0	Glasgow Comma Scale Total	false	None
+57	vgcs	Glasgow Comma Scale Verbal	observation	neuro	None	None	continuous	1.0	5.0	Glasgow Comma Scale Verbal	false	None
+58	egcs	Glasgow Comma Scale Eye 	observation	neuro	None	None	continuous	1.0	4.0	Glasgow Comma Scale Eye	false	None
+59	hct	Hematocrit	observation	circulatory	None	%	continuous	10.0	80.0	The volume of packed red blood cells in a blood specimen	false	None
+60	rbc	Red blood cell count	observation	circulatory	None	m/uL	continuous	0.0	20.0	Red blood cell count	true	0.1
+61	tri	Troponin I	observation	circulatory	None	ng/mL	continuous	0.0	500.0	None	true	0.001
+62	etco2	Endtital CO2	observation	respiratory	None	mmHg	continuous	10.0	60.0	Largest measured CO2 concentration, usually at exhalation	false	None
+63	rass	Richmond Agitation Sedation Scale	observation	neuro	None	None	continuous	-5.0	4.0	Scale used to measure the agitation or sedation level of a person	false	None
+64	hbco	Carboxyhemoglobin	observation	circulatory	None	None	continuous	0.0	100.0	Hemoglobin in which the sites usually bound to oxygen are bound to carbon monoxide.	true	0.1
+65	esr	Erythrocyte sedimentation rate	observation	infection	None	None	continuous	0.0	200.0	Erythrocyte sedimentation rate	true	0.1
+68	adm	Patient admission type	static	demographic	None	None	categorical	None	None	Patient admission type	false	None
+69	hba1c	Hemoglobin A1C	observation	metabolic_renal	None	%	continuous	0.0	100.0	A1C is a blood test for type 2 diabetes and prediabetes.	true	0.01
+71	samp	Body fluid sampling, detected bacterial growth	observation	infection	None	None	categorical	None	None	Body fluid sampling, testing for bacterial infection, True/False/Missing	false	None
+72	spo2	Pulse Oxymetry Oxygen Saturation	observation	respiratory	None	%	continuous	50.0	100.0	Pulse oxymetry measured blood oxygen saturation	false	None
+73	sao2	Oxygen saturation in arterial blood	observation	respiratory	None	%	continuous	50.0	100.0	Oxygen saturation in arterial blood as determined by blood sample	false	None
+75	icp	Intra cranial pressure	observation	neuro	None	mmHg	continuous	-10.0	90.0	Intra cranial pressure	false	None
+76	cout	Cardiac output	observation	circulatory	None	l/min	continuous	0.0	20.0	Cardiac output	false	None
+77	mpap	mean pulmonal arterial pressure	observation	circulatory	None	mmHg	continuous	0.0	100.0	mean Pulmonal arterial pressure	false	None
+78	spap	systolic pulmonal arterial pressure	observation	circulatory	None	mmHg	continuous	5.0	120.0	Systolic pulmonal arterial pressure	false	None
+79	dpap	diastolic pulmonal arterial pressure	observation	circulatory	None	mmHg	continuous	0.0	80.0	Diastolic pulmonal arterial pressure	false	None
+80	cvp	central venous pressure	observation	circulatory	None	mmHg	continuous	-5.0	50.0	Blood pressure in the venea	false	None
+81	svo2	mixed venous oxygenation	observation	circulatory	None	%	continuous	0.0	100.0	Mixed venous oxygenation, the oxygen content of the blood that returns to the heart after meeting tissue needs	false	None
+82	pcwp	pulmonary capillary wedge pressure	observation	circulatory	None	mmHg	continuous	0.0	45.0	Pulmonary capillary wedge pressure	false	None
+83	peep	positive end expiratory pressure - mechanical ventilation	observation	respiratory	None	cmH2O	continuous	0.0	20.0	Positive end expiratory pressure under mechanical ventilation	false	None
+84	peak	Peak pressure - mechanical ventilation	observation	respiratory	None	cmH2O	continuous	0.0	100.0	peak pressure under mechanical ventilation	false	None
+85	plateau	Plateau pressure - mechanical ventilation	observation	respiratory	None	cmH2O	continuous	0.0	50.0	Plateau pressure under mechanical ventilation	false	None
+86	ps	Pressure support - mechanical ventilation	observation	respiratory	None	cmH2O	continuous	0.0	25.0	Pressure support under mechanical ventilation	false	None
+87	tv	tidal volume	observation	respiratory	None	ml	continuous	0.0	1500.0	Tidal volume	false	None
+88	airway	type of airway ventilation	observation	respiratory	None	None	categorical	None	None	Classes: orotracheal, suprapharyngeal, mask, tracheostomy	false	None
+89	supp_o2_vent	Supplemental Oxygen from ventilator	treatment	respiratory	None	%	treatment_cont	0.0	20.0	Supplemental Oxygen as a ventilator setting	false	0.001
+90	ygt	gamma gt	observation	gastrointestinal	None	U/L	continuous	0.0	2500.0	Gamma-glutamyl transferase (GGT) blood test	true	0.1
+91	amm	ammoniak	observation	gastrointestinal	None	mmol/L	continuous	0.0	600.0	Ammoniak, Ammonia, NH3	true	1.0
+92	amyl	amylase	observation	gastrointestinal	None	U/L	continuous	0.0	2000.0	Amylase	true	1.0
+93	lip	lipase	observation	gastrointestinal	None	U/L	continuous	0.0	4000.0	Lipase	true	1.0
+94	ufilt	ultrafiltration on continuous RRT	treatment	metabolic_renal	None	ml	treatment_cont	0.0	7000.0	RRT (Renal Replacement Therapy)	true	10.0
+95	ufilt_ind	ultrafiltration on continuous RRT as indicator variable	treatment	metabolic_renal	None	None	treatment_ind	None	None	RRT (Renal Replacement Therapy)	false	None
+96	rel_urine_rate	Urine rate per hour by weight	observation	metabolic_renal	None	mL/h/kg	continuous	0.0	50.0	Urine output per hour by weight (relative rate)	true	0.01
+97	pf_ratio	Ratio of PaO2 and FiO2	observation	respiratory	None	mmHg	continuous	40.0	3000.0	Partial pressure of oxygen in the blood relative to inspured oxigen	true	0.0
+98	o2sat	Oxygen saturation (arterial blood or pulse oxymetry)	observation	respiratory	None	%	continuous	50.0	100.0	Oxygen saturation in arterial blood as determined by blood sample, if available, and by pulse oxymetry else	false	None
+1001	dobu	dobutamine	treatment	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	8000.0	Dobutamine as a rate	true	1.0
+1002	levo	levosimendan	treatment	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	200.0	Levosimendan as a rate	true	0.1
+1003	norepi	norepinephrine	treatment	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	100.0	Norepinephrine as a rate	true	0.01
+1004	epi	epinephrine	treatment	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	600.0	Epinephrine as a rate	true	0.01
+1005	milrin	milrinone	treatment	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	1000.0	Milrinone as a rate	true	1.0
+1006	teophyllin	theophylline	treatment	circulatory	vasopressor_inotrope	mg/min	treatment_cont	0.0	100.0	Teophyllin as a rate	true	0.01
+1007	dopa	dopamine	treatment	circulatory	vasopressor_inotrope	mcg/min	treatment_cont	0.0	15000.0	Dopamine as a rate	true	1.0
+1008	adh	vasopressin	treatment	circulatory	vasopressor_inotrope	U/min	treatment_cont	0.0	6.0	Vasopressin (Antidiuretic Hormone)	true	0.001
+1009	hep	heparin	treatment	circulatory	anticoagulant	U/h	treatment_cont	0.0	10000.0	Heparin  as a rate	true	100.0
+1010	prop	propofol	treatment	neuro	sedative_anxiolytic	mcg/min	treatment_cont	0.0	50000.0	Propofol  as a rate	true	10.0
+1011	benzdia	benzodiacepine	treatment	neuro	sedative_anxiolytic	mg/h	treatment_cont	0.0	1500.0	Benzodiacepine as a rate	true	0.1
+1012	oth_sed_ind	other sedatives	treatment	neuro	sedative_anxiolytic	None	treatment_ind	None	None	Any other sedative as indicator	false	None
+1013	op_pain_ind	opiate painkiller	treatment	neuro	pain_killer	None	treatment_ind	None	None	Opioid Painkiller	false	None
+1014	nonop_pain_ind	non-opioid analgesic	treatment	neuro	pain_killer	None	treatment_ind	None	None	Painkiller	false	None
+1015	paral_ind	paralytic	treatment	neuro	paralytic	None	treatment_ind	None	None	Paralytics such as Rocuronium	false	None
+1016	abx_ind	antibotics	treatment	infection	antibiotics	None	treatment_ind	None	None	Antibiotics aggregated	false	None
+1017	loop_diur	loop diuretic	treatment	metabolic_renal	diuretic	mg/h	treatment_cont	0.0	500.0	Loop Diuretics as a rate	true	0.1
+1018	ins_ind	insulin	treatment	None	insulin	None	treatment_ind	None	None	Insulin	false	None
+1019	fluid_ind	fluid administration	treatment	None	electrolyte	None	treatment_ind	None	None	Fluid and electrolyte administration	false	None
+1020	inf_rbc_ind	packed red blood cells	treatment	None	blood_products_infusion	None	treatment_ind	None	None	Packed red blood cells	false	None
+1021	ffp_ind	Fresh Frozen Plasma	treatment	None	blood_products_infusion	None	treatment_ind	None	None	Fresh frozen plasma	false	None
+1022	plat_ind	platelets	treatment	None	blood_products_infusion	None	treatment_ind	None	None	Platelets	false	None
+1023	inf_alb_ind	albumin infusion	treatment	None	blood_products_infusion	None	treatment_ind	None	None	Albumin Infusion	false	None
+1024	anti_delir_ind	anti deliriant	treatment	neuro	anti_delirant	None	treatment_ind	None	None	Anti-Deliriant	false	None
+1025	oth_diur_ind	other diuretics	treatment	metabolic_renal	diuretic	None	treatment_ind	None	None	Other diuretics	false	None
+1026	oth_anti_coag_ind	other anticoagulants	treatment	circulatory	anticoagulant	None	treatment_ind	None	None	Other anticoagulants	false	None
+1027	vasod_ind	antihypertensive and vasodilators	treatment	circulatory	antihypertensive_vasolidators	None	treatment_ind	None	None	Antihypertensive and Vasodilators	false	None
+1028	anti_arrhythm_ind	antiarrhythmic	treatment	circulatory	antiarrhythmic	None	treatment_ind	None	None	Anti-arrhythmica agents	false	None
+1029	dobu_ind	Dobutamine indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Dobutamine as an indicator	false	None
+1030	levo_ind	Levosimendan indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Levosimendan as an indicator	false	None
+1031	norepi_ind	Norepinephrine indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Norepinephrine as an indicator	false	None
+1032	epi_ind	Epinephrine	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Epinephrine as an indicator	false	None
+1033	milrin_ind	Milrinone indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Milrinone as an indicator	false	None
+1034	teophyllin_ind	theophylline indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Theophylline as an indicator	false	None
+1035	dopa_ind	Dopamine indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Dopamine as an indicator	false	None
+1036	adh_ind	Vasopressin indicator	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Vasopressin as an indicator	false	None
+1037	hep_ind	Heparin indicator	treatment	circulatory	anticoagulant	None	treatment_ind	None	None	Heparin as an indicator	false	None
+1038	prop_ind	Propofol indicator	treatment	circulatory	sedative_anxiolytic	None	treatment_ind	None	None	Propofol as an indicator	false	None
+1039	benzdia_ind	benzodiacepine indicator	treatment	circulatory	sedative_anxiolytic	None	treatment_ind	None	None	Benzodiacepine as an indicator	false	None
+1040	loop_diur_ind	Loop diuretics indicator	treatment	circulatory	diuretic	None	treatment_ind	None	None	Loop Diuretics as a rate	false	None
+1041	cf_treat_ind	Vasopressors and inotropes as treatments for circulatory failure	treatment	circulatory	vasopressor_inotrope	None	treatment_ind	None	None	Any vasopressor inotrope as an indicator	false	None
+1042	anti_coag_ind	Any anticoagulant treatment indicator	treatment	circulatory	anticoagulant	None	treatment_ind	None	None	Any anticoagulant as an indicator	false	None
+1043	sed_ind	Any sedative anxiolytic treatment indicator	treatment	circulatory	sedative_anxiolytic	None	treatment_ind	None	None	Any sedative anxiolytic as an indicator	false	None
+1043	pain_killer_ind	Any painkiller treatment indicator	treatment	circulatory	pain_killer	None	treatment_ind	None	None	Any painkiller as an indicator	false	None
+1044	diur_ind	Any diuretic treatment indicator	treatment	circulatory	diuretic	None	treatment_ind	None	None	Any diuretic as an indicator	false	None
+1045	blood_prod_ind	Any blood products infusion treatment indicator	treatment	circulatory	blood_products_infusion	None	treatment_ind	None	None	Any products infusion treatment as an indicator	false	None
+1046	vent_ind	Ventilation indicator	treatment	respiratory	ventilation	None	treatment_ind	None	None	ventilation as an indicator	false	None
+2001	sofa	SOFA score	observation	None	None	None	continuous	0	24	SOFA score based on 24h history	false	None
+2002	sofa4	SOFA score	observation	None	None	None	continuous	0	24	SOFA score based on 4h history	false	None
+2003	qsofa	SOFA score	observation	None	None	None	continuous	0	3	quick SOFA score based on 4h history	false	None
+2004	qsofa4	SOFA score	observation	None	None	None	continuous	0	3	quick SOFA score based on 4h history	false	None
+2005	sofa_resp	SOFA score	observation	None	None	None	continuous	0	4	respiratory component of the SOFA score	false	None
+2006	sofa_coag	SOFA score	observation	None	None	None	continuous	0	4	coagulation component of the SOFA score	false	None
+2007	sofa_liver	SOFA score	observation	None	None	None	continuous	0	4	liver component of the SOFA score	false	None
+2008	sofa_cardio	SOFA score	observation	None	None	None	continuous	0	4	cardiovascular system component of the SOFA score	false	None
+2009	sofa_cns	SOFA score	observation	None	None	None	continuous	0	4	central nervous system component of the SOFA score	false	None
+2010	sofa_renal	SOFA score	observation	None	None	None	continuous	0	4	renal function component of the SOFA score	false	None
