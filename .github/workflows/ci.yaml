@@ -24,10 +24,8 @@ jobs:
         uses: mamba-org/setup-micromamba@29d0a406a44cd30f78c79aa44683acbf49ebc6b4
         with:
           micromamba-version: 2.0.8-0
-          cache-env: true
+          cache-downloads: true
           environment-file: environment.yml
-          extra-specs: |
-            python=${{ matrix.PYTHON_VERSION }}
       - name: Install repository
         run: python -m pip install --no-build-isolation --no-deps --disable-pip-version-check -e .
       - name: Run feature_engineering.py
