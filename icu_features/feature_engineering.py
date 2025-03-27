@@ -651,6 +651,13 @@ def outcomes():
     )
     kidney_failure_at_48h_lyu = eep_label(aki_3, 48).alias("kidney_failure_at_48h_lyu")
 
+    # hyperglycemia_at_8h and hypoglycemia_at_8h according to Mehdizavareha et al.,
+    # https://arxiv.org/pdf/2411.01418
+    hyperglycemia_event = pl.col("glucose") > 180  # mg/dl
+    hypoglycemia_event = pl.col("glucose") < 70  # mg/dl
+    hyperglycemia_at_8h = eep_label(hyperglycemia_event, 8).alias("hyperglycemia_at_8h")
+    hypoglycemia_at_8h = eep_label(hypoglycemia_event, 8).alias("hypoglycemia_at_8h")
+
     # log(lactate) in 4 hours. This is 1/2 the forecast horizon of circ. failure eep.
     log_lactate_in_4h = (
         (pl.col("lact") + 0.1).log().shift(-4).alias("log_lactate_in_4h")
@@ -658,21 +665,6 @@ def outcomes():
 
     log_pf_ratio_in_12h = (
         pl.col("pf_ratio").log().shift(-12).alias("log_pf_ratio_in_12h")
-    )
-
-    # The "raw" ICU data contains urine measurements from a bag at specific times (ml).
-    # In `ricu`, we divide these measurement values by the time distance to the last
-    # measurement. This gives us a urine rate (ml/h). This divided by the patient's
-    # weight is the relative urine rate (ml/h/kg). These "relative rate" measurements
-    # are only non-missing at the timepoint of the measurement.
-    # We assign a label if there is a (positive) measurement in 2 hours.
-    log_rel_urine_rate_in_2h = (
-        pl.when(
-            pl.col("rel_urine_rate").is_not_null() & pl.col("rel_urine_rate").ge(0.01)
-        )
-        .then(pl.col("rel_urine_rate").log())
-        .shift(-2)
-        .alias("log_rel_urine_rate_in_2h")
     )
 
     return [
@@ -685,8 +677,9 @@ def outcomes():
         circulatory_failure_at_8h_hyland,
         kidney_failure_at_48h,
         kidney_failure_at_48h_lyu,
+        hyperglycemia_at_8h,
+        hypoglycemia_at_8h,
         log_lactate_in_4h,
-        log_rel_urine_rate_in_2h,
         log_pf_ratio_in_12h,
     ]
 
