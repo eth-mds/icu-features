@@ -612,11 +612,11 @@ def outcomes():
 
         # anuria True if the urine_rate is consistently equal to 0 for 12 hours. False
         # if it is ever above 0. If all values are missing, the result is missing.
-        not_anuria = pl.col("urine_rate").gt(0).cast(pl.Int32)
+        not_anuria = rel_urine_rate.gt(0).cast(pl.Int32)
         anuria = ~(not_anuria.rolling_sum(window_size=12, min_samples=1).gt(0))
 
         return polars_nan_or(
-            crrt.cast(pl.Boolean).replace(False, None).forward_fill(),
+            crrt.cast(pl.Boolean).replace(False, None).forward_fill().fill_null(False),
             (crea / crea_baseline) >= 3.0,
             high_creatine,
             low_urine_rate_24,

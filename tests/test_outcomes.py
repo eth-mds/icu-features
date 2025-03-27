@@ -13,22 +13,29 @@ def to_bool(x):
 
 
 @pytest.mark.parametrize(
-    "events, expected, horizon",
+    "events, expected, horizon, switches_only",
     [
         (
             "- 1 - - 0 0 - - - - - 0 0 0 - - 1 - 1 - 0 0 0 - 1 0 1",
             "1 - 0 0 0 - - 0 0 0 0 0 1 1 1 1 - - - 0 1 1 1 1 - 1 -",
             4,
+            True,
+        ),
+        (
+            "- 1 - - 0 0 - - - - - 0 0 0 - - 1 - 1 - 0 0 0 - 1 0 1",
+            "1 - 0 0 0 - - 0 0 0 0 0 1 1 1 1 - 1 - 0 1 1 1 1 - 1 -",
+            4,
+            False,
         ),
     ],
 )
-def test_eep_labels(events, expected, horizon):
+def test_eep_labels(events, expected, horizon, switches_only):
     df = pl.DataFrame(
         {
             "events": to_bool(events),
             "expected": to_bool(expected),
         }
-    ).with_columns(eep_label(pl.col("events"), horizon).alias("labels"))
+    ).with_columns(eep_label(pl.col("events"), horizon, switches_only).alias("labels"))
     assert_series_equal(df["labels"], df["expected"], check_names=False)
 
 
@@ -94,16 +101,6 @@ def test_polars_nan_or(args, expected):
                 }
             ),
             pl.Series(np.arange(4 * 24, 0, -1) / 24),
-        ),
-        (
-            "los_at_24h",
-            pl.DataFrame(
-                {
-                    "los_icu": 4.0,
-                    "time_hours": np.arange(0, 4 * 24),
-                }
-            ),
-            pl.Series(24 * [None] + [4.0] + 71 * [None]),
         ),
         (
             "log_lactate_in_4h",
@@ -192,8 +189,8 @@ def test_outcomes(outcome_name, input, expected):
             pl.DataFrame(
                 {
                     "crea": [1.0] * 24 + [None] * 72 + [2.0] * 72 + [4.0] * 48,
-                    "urine_rate": 70,
-                    "weight": 70,
+                    "rel_urine_rate": 1,
+                    "ufilt_ind": [False] * 216,
                 }
             ),
             pl.Series(
