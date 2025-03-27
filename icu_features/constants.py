@@ -1,8 +1,6 @@
 from pathlib import Path
 
-VARIABLE_REFERENCE_PATH = (
-    Path(__file__).parents[1] / "resources" / "variable_reference.tsv"
-)
+VARIABLE_REFERENCE_PATH = Path(__file__).parents[1] / "resources" / "variables.tsv"
 
 HORIZONS = [8, 24, 72]
 
@@ -123,3 +121,17 @@ APACHE_II_VARIABLES = [
     "tgcs",
     "wbc",
 ]
+
+CONTINUOUS_FEATURES = [
+    "mean",
+    "sq_mean",
+    "std",
+    "slope",
+    "fraction_nonnull",
+    "all_missing",
+    "min",
+    "max",
+]
+CATEGORICAL_FEATURES = ["mode", "num_nonmissing"]
+TREATMENT_INDICATOR_FEATURES = ["num", "any"]
+TREATMENT_CONTINUOUS_FEATURES = ["rate"]

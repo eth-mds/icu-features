@@ -6,6 +6,8 @@ import click
 import numpy as np
 import polars as pl
 
+from icu_features.constants import CAT_MISSING_NAME, HORIZONS, VARIABLE_REFERENCE_PATH
+
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
@@ -13,10 +15,6 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-
-VARIABLE_REFERENCE_PATH = Path(__file__).parents[1] / "resources" / "variables.tsv"
-HORIZONS = [8, 24, 72]
-CAT_MISSING_NAME = "(MISSING)"
 
 variables = pl.read_csv(VARIABLE_REFERENCE_PATH, separator="\t", null_values=["None"])
 
@@ -649,8 +647,8 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
     logger.info(f"Time to check for nans: {toc - tic:.2f}s")
 
     # Lazy polars.DataFrame.upsample for time_column with dtype int.
-    # The result is a DataFrame with a row for each hour between 0 and the maximum
-    # time in the dataset for each stay_id.
+    # The result is a DataFrame with a row for each hour between 0 and the maximum time
+    # in the dataset for each stay_id.
     time_ranges = (
         dyn.group_by("stay_id")
         .agg(pl.col("time_hours").max().alias("max_time"))
@@ -667,7 +665,6 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
         .explode("time_hours")
     )
 
-    # equivalent to a pandas outer join
     dyn = dyn.join(time_ranges, on=["stay_id", "time_hours"], how="full", coalesce=True)
     dyn = dyn.sort(["stay_id", "time_hours"])
 
@@ -711,7 +708,7 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
 
         dyn = dyn.with_columns(col)
 
-    expressions += outcomes()
+    expressions += additional_variables() + outcomes()
 
     q = dyn.group_by("stay_id").agg(expressions).explode(pl.exclude("stay_id"))
 

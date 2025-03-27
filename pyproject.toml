@@ -31,3 +31,6 @@ default_section = 'THIRDPARTY'
 
 [tool.setuptools]
 py-modules = ["icu_features"]
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
