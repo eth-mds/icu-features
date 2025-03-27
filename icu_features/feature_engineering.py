@@ -6,6 +6,8 @@ import click
 import numpy as np
 import polars as pl
 
+from icu_features.constants import CAT_MISSING_NAME, HORIZONS, VARIABLE_REFERENCE_PATH
+
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
@@ -13,10 +15,6 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-
-VARIABLE_REFERENCE_PATH = Path(__file__).parents[1] / "resources" / "variables.tsv"
-HORIZONS = [8, 24, 72]
-CAT_MISSING_NAME = "(MISSING)"
 
 variables = pl.read_csv(VARIABLE_REFERENCE_PATH, separator="\t", null_values=["None"])
 
