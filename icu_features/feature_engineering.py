@@ -359,12 +359,13 @@ def eep_label(events: pl.Expr, horizon: int, switches_only: bool = True):
     From an event series, create a label for the early event prediction (eep) task.
 
      - If there is a positive event at the current time step, the label is missing.
-     - If the last event in the history was positive, and there is a positive event
-       within the next `horizon` hours, the label is missing.
+     - If `switches_only` is `True`, and if the last event in the history was positive,
+       and there is a positive event within the next `horizon` hours, the label is
+       missing. That is, we only predict switches from stable to unstable.
      - If there was no event in the history or the last event in the history was
-       negative or switches_only is False, and there is a positive event within the next
-       `horizon` hours, the label is true. This holds even if there is a negative event
-       at the current time step.
+       negative or `switches_only` is `False`, and there is a positive event within the
+       next `horizon` hours, the label is true. This holds even if there is a negative
+       event at the current time step.
      - Else, if there is a negative event within the next `horizon` hours (and no
        positive event within the next `horizon` hours or at the current time step), the
        label is false.
