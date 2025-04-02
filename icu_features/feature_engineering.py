@@ -688,8 +688,8 @@ def outcomes():
         "severe_meld_at_48h"
     )
 
-    sofa3 = pl.col("bili").forward_fill(1).backward_fill(1) > 6.0
-    sofa3_at_48h = eep_label(sofa3, 48).alias("sofa3_at_48h")
+    liver_sofa3 = pl.col("bili").forward_fill(1).backward_fill(1) > 6.0
+    liver_sofa3_at_48h = eep_label(liver_sofa3, 48).alias("liver_sofa3_at_48h")
 
     # log(lactate) in 4 hours. This is 1/2 the forecast horizon of circ. failure eep.
     log_lactate_in_4h = (
@@ -713,7 +713,7 @@ def outcomes():
         hyperglycemia_at_8h,
         hypoglycemia_at_8h,
         severe_meld_at_48h,
-        sofa3_at_48h,
+        liver_sofa3_at_48h,
         log_lactate_in_4h,
         log_pf_ratio_in_12h,
     ]
