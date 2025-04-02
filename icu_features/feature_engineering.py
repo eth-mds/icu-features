@@ -660,8 +660,12 @@ def outcomes():
     # https://arxiv.org/pdf/2411.01418
     hyperglycemia_event = pl.col("glu") > 180  # mg/dl
     hypoglycemia_event = pl.col("glu") < 70  # mg/dl
-    hyperglycemia_at_8h = eep_label(hyperglycemia_event, 8).alias("hyperglycemia_at_8h")
-    hypoglycemia_at_8h = eep_label(hypoglycemia_event, 8).alias("hypoglycemia_at_8h")
+    hyperglycemia_at_8h = eep_label(hyperglycemia_event, 8, switches_only=False).alias(
+        "hyperglycemia_at_8h"
+    )
+    hypoglycemia_at_8h = eep_label(hypoglycemia_event, 8, switches_only=False).alias(
+        "hypoglycemia_at_8h"
+    )
 
     # Liver failure according to
     # - MELD score > 30: https://en.wikipedia.org/wiki/Model_for_End-Stage_Liver_Disease
