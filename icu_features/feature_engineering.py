@@ -421,11 +421,11 @@ def polars_nan_or(*args: pl.Expr):
 
     Examples
     --------
-    >>> import polars as pl
-    >>> a = pl.Series("a", [1, 2, None])
-    >>> b = pl.Series("b", [0, None, 2])
-    >>> polars_nan_or(a < 0, b == 2)
-    [ False, None, True ]
+    >>> polars_nan_or(
+    >>>     pl.Series("a", [True, True, True, False, False, False]),
+    >>>     pl.Series("b", [True, None, False, True, None, False]),
+    >>> )
+    [True, True, True, True, None, False]
     """
     return (
         pl.when(pl.max_horizontal(*args))  # This ignores nans
@@ -493,8 +493,8 @@ def outcomes():
     remaining_los = pl.when(remaining_los > 0).then(remaining_los).otherwise(None)
     remaining_los = remaining_los.alias("remaining_los")
 
-    # respiratory failure label with simple imputation of po2 and fio2, related to
-    # Hueser et al., 2024 https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
+    # Severe respiratory failure label with simple imputation of po2 and fio2, related
+    # to Hueser et al. https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
     SEVERE_RESP_PF_DEF_TSH = 100
     pf_ratio = (
         100
