@@ -546,12 +546,12 @@ def outcomes():
     )
     circulatory_failure_at_8h = eep_label(event, 8).alias("circulatory_failure_at_8h")
 
-    # Attempt to reimplement Hyland et al.'s circulatory failure label.
+    # Circulatory failure label using interpolated lactate, inspured by Hyland et al.
     # https://www.nature.com/articles/s41591-020-0789-4
     # First, we interpolate lactate values. If the time difference between two
     # consecutive lactate measurements is less than 6 hours, or if both lactate values
     # are either above or below 2, we linearly interpolate the lactate value. Else, we
-    # fill the value forward and backward for 6 hours.
+    # fill the value forward and backward for 3 hours.
     time = pl.when(pl.col("lact").is_not_null()).then(pl.col("time_hours"))
     interp = (time.backward_fill() - time.forward_fill() < 6) | (
         bad_lact.forward_fill() == bad_lact.backward_fill()
@@ -561,16 +561,16 @@ def outcomes():
         .then(pl.col("lact").interpolate(method="linear"))
         .otherwise(pl.col("lact").backward_fill(3).forward_fill(3))
     )
-    # On the boundary, if the first value of lactate is above the threshold ("bad"), we
-    # fill backwards indefinitely. If the last value is above the threshold, fill
-    # forward indefinitely.
+    # On the boundary, if the first value of lactate is below the threshold ("good"), we
+    # fill backwards indefinitely. If the last value is below the threshold, fill
+    # forward indefinitely. Else, we fill forward and backward for 3 hours.
     lact_interp = pl.coalesce(
         lact_interp,
         pl.when(pl.col("time").le(time.min()) & bad_lact.backward_fill()).then(
-            lact_interp.forward_fill()
+            lact_interp.backward_fill()
         ),
         pl.when(pl.col("time").ge(time.max()) & bad_lact.forward_fill()).then(
-            lact_interp.backward_fill()
+            lact_interp.forward_fill()
         ),
     )
     bad_lact_interp = lact_interp >= HIGH_LACT_TSH
@@ -580,8 +580,8 @@ def outcomes():
         .when(~bad_map & ~bad_lact_interp)
         .then(False)
     )
-    circulatory_failure_at_8h_hyland = eep_label(event, 8, switches_only=False).alias(
-        "circulatory_failure_at_8h_hyland"
+    circulatory_failure_at_8h_imputed = eep_label(event, 8, switches_only=False).alias(
+        "circulatory_failure_at_8h_imputed"
     )
 
     # kidney_failure_at_48h
@@ -699,7 +699,7 @@ def outcomes():
         respiratory_failure_at_24h_severe_imputed,
         remaining_los,
         circulatory_failure_at_8h,
-        circulatory_failure_at_8h_hyland,
+        circulatory_failure_at_8h_imputed,
         kidney_failure_at_48h,
         kidney_failure_at_48h_lyu,
         hyperglycemia_at_8h,
