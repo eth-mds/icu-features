@@ -495,15 +495,16 @@ def outcomes():
 
     # respiratory failure label with simple imputation of po2 and fio2, related to
     # Hueser et al., 2024 https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
+    SEVERE_RESP_PF_DEF_TSH = 100
     pf_ratio = (
         100
         * pl.col("po2").forward_fill(1).backward_fill(1)
         / pl.col("fio2").forward_fill(1).backward_fill(1)
     )
-    events = pf_ratio < RESP_PF_DEF_TSH
-    resp_failure_at_24h_hueser = eep_label(events, 24, switches_only=False).alias(
-        "respiratory_failure_at_24h_hueser"
-    )
+    events = pf_ratio < SEVERE_RESP_PF_DEF_TSH
+    respiratory_failure_at_24h_severe_imputed = eep_label(
+        events, 24, switches_only=False
+    ).alias("respiratory_failure_at_24h_severe_imputed")
 
     # circulatory_failure_at_8h
     # A patient is considered to have a circulatory failure if the mean arterial
@@ -695,7 +696,7 @@ def outcomes():
         mortality_at_24h,
         decompensation_at_24h,
         resp_failure_at_24h,
-        resp_failure_at_24h_hueser,
+        respiratory_failure_at_24h_severe_imputed,
         remaining_los,
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_hyland,
