@@ -632,9 +632,9 @@ def outcomes():
     )
     kidney_failure_at_48h = eep_label(aki_3, 48).alias("kidney_failure_at_48h")
 
-    # Kidney failure, motivated by Lyu et al. 2024:
+    # Kidney failure with creatine imputation motivated by Lyu et al. 2024:
     # https://www.medrxiv.org/content/10.1101/2024.02.01.24302063v1
-    # Similarly to circulatory_failure_8h_hyland, we linearly interpolate creatine
+    # Similarly to circulatory_failure_8h_imputed, we linearly interpolate creatine
     # values. We only interpolate if the time difference between two consecutive
     # creatine measurements is less than 48 hours. We ffill and bfill the first and last
     # measurements.
@@ -652,7 +652,9 @@ def outcomes():
         urine_rate / pl.col("weight"),
         pl.col("ufilt_ind"),
     )
-    kidney_failure_at_48h_lyu = eep_label(aki_3, 48).alias("kidney_failure_at_48h_lyu")
+    kidney_failure_at_48h_imputed = eep_label(aki_3, 48, switches_only=False).alias(
+        "kidney_failure_at_48h_imputed"
+    )
 
     # hyperglycemia_at_8h and hypoglycemia_at_8h according to Mehdizavareha et al.,
     # https://arxiv.org/pdf/2411.01418
@@ -701,7 +703,7 @@ def outcomes():
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_imputed,
         kidney_failure_at_48h,
-        kidney_failure_at_48h_lyu,
+        kidney_failure_at_48h_imputed,
         hyperglycemia_at_8h,
         hypoglycemia_at_8h,
         severe_meld_at_48h,
