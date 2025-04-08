@@ -682,7 +682,7 @@ def outcomes():
     )
     bili = pl.col("bili").forward_fill(1).backward_fill(1).clip(1, None)
     inr = pl.col("inr_pt").forward_fill(1).backward_fill(1).clip(1, None)
-    meld_score = 3.78 * crea.log() + 11.2 * inr.log() + 9.57 * bili.log() + 6.43
+    meld_score = 3.78 * bili.log() + 11.2 * inr.log() + 9.57 * crea.log() + 6.43
     meld_event = meld_score > 30
     severe_meld_at_48h = eep_label(meld_event, 48, switches_only=False).alias(
         "severe_meld_at_48h"
