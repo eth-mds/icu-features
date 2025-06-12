@@ -507,6 +507,10 @@ def outcomes(dataset):
     respiratory_failure_at_24h = eep_label(events, 24).alias("respiratory_failure_at_24h")
     severe_respiratory_failure_at_24h = eep_label(severe_events, 24).alias("severe_respiratory_failure_at_24h")
 
+    remaining_los = pl.col("los_icu") - pl.col("time_hours") / 24.0
+    remaining_los = pl.when(remaining_los > 0).then(remaining_los).otherwise(None)
+    remaining_los = remaining_los.alias("remaining_los")
+
     # Severe respiratory failure label with simple imputation of po2 and fio2, related
     # to Hueser et al. https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
     pf_ratio_imputed = (
@@ -740,6 +744,7 @@ def outcomes(dataset):
         respiratory_failure_at_24h,
         severe_respiratory_failure_at_24h,
         severe_respiratory_failure_at_24h_imputed,
+        remaining_los,
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_imputed,
         kidney_failure_at_48h,
