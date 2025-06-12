@@ -435,7 +435,7 @@ def polars_nan_or(*args: pl.Expr):
     )
 
 
-def outcomes():
+def outcomes(dataset):
     """
     Compute outcomes.
 
@@ -480,31 +480,44 @@ def outcomes():
         .otherwise(False)
     ).alias("decompensation_at_24h")
 
-    # respiratory_failure_at_24h
+    # (severe) respiratory_failure_at_24h
     # If the PaO2/FiO2 ratio is below 200, the patient is considered to have a
-    # respiratory failure (event). This used pf_ratio from other_variables(). This uses
-    # a fio2 which was imputed by 21% if the patient was not ventilated.
-    RESP_PF_DEF_TSH = 200.0
-    events = pl.col("pf_ratio") < RESP_PF_DEF_TSH
-    resp_failure_at_24h = eep_label(events, 24).alias("respiratory_failure_at_24h")
+    # respiratory failure event. If it's below 100, the patient is considered to have a
+    # severe respiratory event. We use a fio2 which was imputed by 21% if the patient
+    # was not ventilated.
+    vent_ind = pl.col("vent_ind") | pl.col("vent_ind").shift(-1, fill_value=False)
+    fio2 = (pl.col("fio2") / 100.0).fill_null(pl.when(~vent_ind).then(0.21))
 
-    # remaining_los
-    remaining_los = pl.col("los_icu") - pl.col("time_hours") / 24.0
-    remaining_los = pl.when(remaining_los > 0).then(remaining_los).otherwise(None)
-    remaining_los = remaining_los.alias("remaining_los")
+    RESP_PF_DEF_TSH = 200.0
+    SEVERE_RESP_PF_DEF_TSH = 100.0
+    RESP_SAO2_DEF_TSH = 90
+    SEVERE_RESP_SAO2_DEF_TSH = 90
+
+    # There are very few pf/ratio values in nwicu, picdb, and zigong. For picdb and
+    # zigong we use sao2 instead. For nwicu, not even sao2 is available. We use the
+    # noisier spo2 instead.
+    pf_ratio = pl.col("po2") / fio2
+    if dataset in ["nwicu", "picdb", "zigong"]:
+        events = pl.col("sao2") <= RESP_SAO2_DEF_TSH
+        severe_events = pl.col("sao2") <= SEVERE_RESP_SAO2_DEF_TSH
+    else:
+        events = pf_ratio < RESP_PF_DEF_TSH
+        severe_events = pf_ratio < SEVERE_RESP_PF_DEF_TSH
+
+    respiratory_failure_at_24h = eep_label(events, 24).alias("respiratory_failure_at_24h")
+    severe_respiratory_failure_at_24h = eep_label(severe_events, 24).alias("severe_respiratory_failure_at_24h")
 
     # Severe respiratory failure label with simple imputation of po2 and fio2, related
     # to Hueser et al. https://www.medrxiv.org/content/10.1101/2024.01.23.24301516v1.
-    SEVERE_RESP_PF_DEF_TSH = 100
-    pf_ratio = (
+    pf_ratio_imputed = (
         100
         * pl.col("po2").forward_fill(1).backward_fill(1)
         / pl.col("fio2").forward_fill(1).backward_fill(1)
     )
-    events = pf_ratio < SEVERE_RESP_PF_DEF_TSH
-    respiratory_failure_at_24h_severe_imputed = eep_label(
+    events = pf_ratio_imputed < SEVERE_RESP_PF_DEF_TSH
+    severe_respiratory_failure_at_24h_imputed = eep_label(
         events, 24, switches_only=False
-    ).alias("respiratory_failure_at_24h_severe_imputed")
+    ).alias("severe_respiratory_failure_at_24h_imputed")
 
     # circulatory_failure_at_8h
     # A patient is considered to have a circulatory failure if the mean arterial
@@ -541,9 +554,17 @@ def outcomes():
     # If the map is "good" (not low and not on drugs) and the lactate is not high, the
     # event label is negative. If the map and lact don't agree, or if one of them is
     # missing, the event label is missing.
-    event = (
-        pl.when(bad_map & bad_lact).then(True).when(~bad_map & ~bad_lact).then(False)
-    )
+    if dataset in ["picdb", "zigong"]:
+        # For PICdb and Zigong, map is not consistently available. We relax the
+        # condition for a "False": A patient is not in an event if the lactate is good
+        # and the map is good or not available.
+        event = (
+            pl.when(bad_map & bad_lact).then(True).when(~bad_map.fill_null(False) & ~bad_lact).then(False)
+        )
+    else:
+        event = (
+            pl.when(bad_map & bad_lact).then(True).when(~bad_map & ~bad_lact).then(False)
+        )
     circulatory_failure_at_8h = eep_label(event, 8).alias("circulatory_failure_at_8h")
 
     # Circulatory failure label using interpolated lactate, inspured by Hyland et al.
@@ -621,8 +642,8 @@ def outcomes():
             crrt.cast(pl.Boolean).replace(False, None).forward_fill().fill_null(False),
             (crea / crea_baseline) >= 3.0,
             high_creatine,
-            low_urine_rate_24,
-            anuria,
+            low_urine_rate_24.fill_null(False),
+            anuria.fill_null(False),
         )
 
     aki_3 = kdigo_3(
@@ -631,7 +652,6 @@ def outcomes():
         pl.col("ufilt_ind"),
     )
     kidney_failure_at_48h = eep_label(aki_3, 48).alias("kidney_failure_at_48h")
-
     # Kidney failure with creatine imputation motivated by Lyu et al. 2024:
     # https://www.medrxiv.org/content/10.1101/2024.02.01.24302063v1
     # Similarly to circulatory_failure_8h_imputed, we linearly interpolate creatine
@@ -678,15 +698,27 @@ def outcomes():
             .forward_fill(7 * 24)
         )
         .then(4.0)
-        .otherwise(pl.col("crea").forward_fill(1).backward_fill(1))
+        .otherwise(pl.col("crea").backward_fill(1))
     )
-    bili = pl.col("bili").forward_fill(1).backward_fill(1).clip(1, None)
-    inr = pl.col("inr_pt").forward_fill(1).backward_fill(1).clip(1, None)
-    meld_score = 3.78 * crea.log() + 11.2 * inr.log() + 9.57 * bili.log() + 6.43
-    meld_event = meld_score > 30
+    bili = pl.col("bili").backward_fill(1)
+
+    if dataset in ["sic", "nwicu", "picdb"]:
+        # These datasets don't report inr_pt, but just the non-standardized value pt.
+        # We impute, assuming an ISI=1.0 (appears reasonable for modern equipment) and
+        # mean normal PT = 12s.
+        inr_pt = (pl.col("pt") / 12).backward_fill(1)
+    else:
+        inr_pt = pl.col("inr_pt").backward_fill(1)
+
+    SEVERE_MELD_DEF_TSH = 30.0
+    meld_event = 3.78 * bili.clip(1.0, None).log() + 11.2 * inr_pt.clip(1.0, None).log() + 9.57 * crea.clip(1.0, None).log() + 6.43 >= SEVERE_MELD_DEF_TSH
     severe_meld_at_48h = eep_label(meld_event, 48, switches_only=False).alias(
         "severe_meld_at_48h"
     )
+
+    # Different to the meld above, we clip from below by 0.1 instead of 1.0.
+    meld_score = 3.78 * bili.clip(0.1, None).log() + 11.2 * inr_pt.clip(0.1, None).log() + 9.57 * crea.clip(0.1, None).log() + 6.43
+    meld_score_in_24h = meld_score.shift(-24).alias("meld_score_in_24h")
 
     liver_sofa3 = pl.col("bili").forward_fill(1).backward_fill(1) > 6.0
     liver_sofa3_at_48h = eep_label(liver_sofa3, 48).alias("liver_sofa3_at_48h")
@@ -697,15 +729,17 @@ def outcomes():
     )
 
     log_pf_ratio_in_12h = (
-        pl.col("pf_ratio").log().shift(-12).alias("log_pf_ratio_in_12h")
+        pf_ratio.log().shift(-12).alias("log_pf_ratio_in_12h")
     )
+
+    log_creatinine_in_24h = (pl.col("crea") + 0.1).log().shift(-24).alias("log_creatinine_in_24h")
 
     return [
         mortality_at_24h,
         decompensation_at_24h,
-        resp_failure_at_24h,
-        respiratory_failure_at_24h_severe_imputed,
-        remaining_los,
+        respiratory_failure_at_24h,
+        severe_respiratory_failure_at_24h,
+        severe_respiratory_failure_at_24h_imputed,
         circulatory_failure_at_8h,
         circulatory_failure_at_8h_imputed,
         kidney_failure_at_48h,
@@ -713,8 +747,10 @@ def outcomes():
         hyperglycemia_at_8h,
         hypoglycemia_at_8h,
         severe_meld_at_48h,
+        meld_score_in_24h,
         liver_sofa3_at_48h,
         log_lactate_in_4h,
+        log_creatinine_in_24h,
         log_pf_ratio_in_12h,
     ]
 
@@ -731,8 +767,10 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
 
     if "patient_id" not in sta.collect_schema().names():
         sta = sta.with_columns(pl.col("stay_id").alias("patient_id"))
+    if "hospital_id" not in sta.collect_schema().names():
+        sta = sta.with_columns(pl.lit(0).alias("hospital_id"))
 
-    dyn = dyn.join(sta, on="stay_id", how="full", coalesce=True, validate="m:1")
+    dyn = dyn.join(sta, on="stay_id", how="left", coalesce=True, validate="m:1")
     dyn = dyn.with_columns(
         (pl.col("time").dt.total_hours()).cast(pl.Int32).alias("time_hours")
     )
@@ -769,7 +807,7 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
     dyn = dyn.join(time_ranges, on=["stay_id", "time_hours"], how="full", coalesce=True)
     dyn = dyn.sort(["stay_id", "time_hours"])
 
-    expressions = ["time_hours", "anchoryear", "carevue", "metavision", "patient_id"]
+    expressions = ["time_hours"]
 
     for row in variables.rows(named=True):
         tag = row["VariableTag"]
@@ -809,15 +847,20 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
 
         dyn = dyn.with_columns(col)
 
-    expressions += additional_variables() + outcomes()
+    expressions += additional_variables() + outcomes(dataset=dataset)
 
-    q = dyn.group_by("stay_id").agg(expressions).explode(pl.exclude("stay_id"))
+    dyn = dyn.group_by("stay_id").agg(expressions).explode(pl.exclude("stay_id"))
+    dyn = dyn.join(
+        sta.select(
+            ["stay_id", "year", "carevue", "metavision", "patient_id", "adm", "insurance", "ward", "hospital_id", "icd10_blocks", "icd10_ccsr"]
+        ), on="stay_id", how="left", coalesce=True, validate="m:1")
 
-    # These hashes are useful for subsetting. .hash() returns a u64-int. By normalizing
-    # with 2**64, we get a pseudo-random float between 0 and 1.
-    q = q.with_columns(
+    dyn = dyn.with_columns(
+        # These hashes are useful for subsetting. .hash() returns a u64-int. By
+        # normalizing with 2**64, we get a pseudo-random float between 0 and 1.
         (pl.col("stay_id").hash() / 2.0**64).alias("stay_id_hash"),
         (pl.col("patient_id").hash() / 2.0**64).alias("patient_id_hash"),
+        pl.col("time_hours").log1p().alias("log_time_hours"),
     ).with_columns(
         pl.when(pl.col("patient_id_hash") < 0.7)
         .then(pl.lit("train"))
@@ -831,22 +874,16 @@ def main(dataset: str, data_dir: str | Path):  # noqa D
     )
 
     feature_names = set(features())
-    schema_names = set(q.collect_schema().keys())
+    schema_names = set(dyn.collect_schema().keys())
     missing_features = feature_names - schema_names
 
     if missing_features:
         raise ValueError(f"Missing features: {missing_features}")
 
     tic = perf_counter()
-    out = q.collect()
+    dyn.sink_parquet(data_dir / dataset / "features.parquet", engine="streaming")
     toc = perf_counter()
     logger.info(f"Time to compute features: {toc - tic:.2f}s")
-    logger.info(f"out.shape: {out.shape}")
-
-    tic = perf_counter()
-    out.write_parquet(data_dir / dataset / "features.parquet")
-    toc = perf_counter()
-    logger.info(f"Time to write features: {toc - tic:.2f}s")
 
 
 if __name__ == "__main__":

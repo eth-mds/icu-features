@@ -31,7 +31,7 @@ VariableID	VariableTag	VariableName	VariableType	OrganSystem	TreatmentGroups	Uni
 30	crp	C-reactive protein	observation	infection	None	mg/L	continuous	0.0	2000.0	Inflammation marker	true	0.01
 31	dbp	Diastolic blood pressure	observation	circulatory	None	mmHg	continuous	0.0	200.0	Diastolic blood pressure, blood pressure when heart rests	false	None
 32	fgn	Fibrinogen	observation	circulatory	None	mg/dL	continuous	0.0	1500.0	None	false	None
-33	glu	Glucose	observation	metabolic_renal	None	mg/dL	continuous	0.0	1000.0	None	false	None
+33	glu	Glucose	observation	metabolic_renal	None	mg/dL	continuous	0.0	1000.0	None	true	5
 34	hgb	Hemoglobin	observation	circulatory	None	g/dL	continuous	4.0	18.0	Oxygen carrying protein	false	None
 35	inr_pt	Prothrombin	observation	circulatory	None	None	continuous	0.0	50.0	Prothrombin time/international normalized ratio	true	0.01
 36	k	Potassium	observation	metabolic_renal	None	mmol/l	continuous	0.0	10.0	None	false	None
@@ -61,7 +61,6 @@ VariableID	VariableTag	VariableName	VariableType	OrganSystem	TreatmentGroups	Uni
 63	rass	Richmond Agitation Sedation Scale	observation	neuro	None	None	continuous	-5.0	4.0	Scale used to measure the agitation or sedation level of a person	false	None
 64	hbco	Carboxyhemoglobin	observation	circulatory	None	None	continuous	0.0	100.0	Hemoglobin in which the sites usually bound to oxygen are bound to carbon monoxide.	true	0.1
 65	esr	Erythrocyte sedimentation rate	observation	infection	None	None	continuous	0.0	200.0	Erythrocyte sedimentation rate	true	0.1
-68	adm	Patient admission type	static	demographic	None	None	categorical	None	None	Patient admission type	false	None
 69	hba1c	Hemoglobin A1C	observation	metabolic_renal	None	%	continuous	0.0	100.0	A1C is a blood test for type 2 diabetes and prediabetes.	true	0.01
 71	samp	Body fluid sampling, detected bacterial growth	observation	infection	None	None	categorical	None	None	Body fluid sampling, testing for bacterial infection, True/False/Missing	false	None
 72	spo2	Pulse Oxymetry Oxygen Saturation	observation	respiratory	None	%	continuous	50.0	100.0	Pulse oxymetry measured blood oxygen saturation	false	None

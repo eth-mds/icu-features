@@ -8,6 +8,6 @@ dependencies:
   - pip
   - click
   - numpy>=2.1
-  - polars
+  - polars>=1.26
   - pytest
   - pyarrow

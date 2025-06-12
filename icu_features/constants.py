@@ -2,7 +2,7 @@ from pathlib import Path
 
 VARIABLE_REFERENCE_PATH = Path(__file__).parents[1] / "resources" / "variables.tsv"
 
-HORIZONS = [8, 24, 72]
+HORIZONS = [8, 24]
 
 CAT_MISSING_NAME = "(MISSING)"
 
@@ -124,7 +124,6 @@ APACHE_II_VARIABLES = [
 
 CONTINUOUS_FEATURES = [
     "mean",
-    "sq_mean",
     "std",
     "slope",
     "fraction_nonnull",

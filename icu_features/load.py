@@ -106,7 +106,7 @@ def load(
     if other_columns is None:
         other_columns = []
 
-    columns_to_load = columns + [outcome, "dataset", "stay_id_hash"]
+    columns_to_load = sorted(set(columns + [outcome, "dataset", "stay_id_hash"]))
     if "time_hours" not in columns:
         columns_to_load += ["time_hours"]
 
@@ -122,9 +122,7 @@ def load(
     y = df[outcome].to_numpy()
     assert np.isnan(y).sum() == 0
 
-    return (df.select(columns), y) + tuple(
-        df.select(c).to_series() for c in other_columns
-    )
+    return df.select(columns), y, df.select(other_columns)
 
 
 def features(
