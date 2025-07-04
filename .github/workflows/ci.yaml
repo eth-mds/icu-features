@@ -29,7 +29,10 @@ jobs:
       - name: Install repository
         run: python -m pip install --no-build-isolation --no-deps --disable-pip-version-check -e .
       - name: Run feature_engineering.py
-        run: python icu_features/feature_engineering.py --dataset "eicu_demo" --data_dir "tests/testdata"
+        run: |
+          pip install icd-mappings
+          python icu_features/icd_codes.py --data_dir "tests/testdata" --dataset "eicu_demo"
+          python icu_features/feature_engineering.py --dataset "eicu_demo" --data_dir "tests/testdata"
       - name: Pytest
         run: pytest tests
 

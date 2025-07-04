@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import click
 import polars as pl
 from icdmappings import Mapper
 
@@ -32,9 +35,11 @@ def icd9_blocks(x):
     return mapper.map(icd10code, source="icd10", target="block") or ""
 
 
-for dataset in datasets:
-    print(f"Processing {dataset}")
-    sta = pl.scan_parquet(f"/cluster/work/math/lmalte/data/{dataset}/sta.parquet")
+@click.command()
+@click.option("--data_dir", type=click.Path(exists=True))
+@click.option("--dataset", type=str, default="eicu_demo")
+def main(data_dir: str, dataset: str):  # noqa D
+    sta = pl.scan_parquet(Path(data_dir) / dataset / "sta.parquet")
     sta = sta.collect()
 
     if dataset == "hirid":
@@ -49,7 +54,7 @@ for dataset in datasets:
             )
         )
 
-    if dataset == "eicu":
+    if dataset in ["eicu", "eicu_demo"]:
         # For eicu, we don't extract as list, but as a string of comma-separated values.
         sta = sta.with_columns(
             pl.col("icd9_diagnosis").map_elements(
@@ -84,4 +89,8 @@ for dataset in datasets:
     sta = sta.with_columns(
         pl.concat_list("icd10_blocks", "icd9_blocks").alias("icd10_blocks"),
     )
-    sta.write_parquet(f"/cluster/work/math/lmalte/data/{dataset}/sta.parquet")
+    sta.write_parquet(Path(data_dir) / dataset / "sta.parquet")
+
+
+if __name__ == "__main__":
+    main()
