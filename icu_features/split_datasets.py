@@ -44,10 +44,25 @@ def main(data_dir):
             "mimic-metavision",
             pl.col("metavision") & pl.col("carevue").is_null(),
         ),
+        (
+            "mimic_demo",
+            "mimic_demo-carevue",
+            pl.col("carevue") & pl.col("metavision").is_null(),
+        ),
+        (
+            "mimic",
+            "mimic_demo-metavision",
+            pl.col("metavision") & pl.col("carevue").is_null(),
+        ),
         ("miiv", "miiv-late", pl.col("year") > 2012),
         ("aumc", "aumc-early", pl.col("year") == 2006),
         ("aumc", "aumc-late", pl.col("year") == 2013),
     ]:
+        input_path = Path(data_dir) / source
+        if not input_path.exists():
+            print(f"Skipping {source} as it does not exist in {data_dir}.")
+            continue
+
         sta = pl.scan_parquet(Path(data_dir) / source / "sta.parquet").filter(filter_)
         sta = sta.collect()
 
