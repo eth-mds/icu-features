@@ -1,2 +1,5 @@
 tests/testdata/eicu_demo/dyn.parquet filter=lfs diff=lfs merge=lfs -text
 tests/testdata/eicu_demo/sta.parquet filter=lfs diff=lfs merge=lfs -text
+tests/testdata/eicu_demo/hospital.parquet filter=lfs diff=lfs merge=lfs -text
+tests/testdata/mimic_demo/dyn.parquet filter=lfs diff=lfs merge=lfs -text
+tests/testdata/mimic_demo/sta.parquet filter=lfs diff=lfs merge=lfs -text

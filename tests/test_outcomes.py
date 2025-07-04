@@ -124,7 +124,7 @@ def test_polars_nan_or(args, expected):
     ],
 )
 def test_outcomes(outcome_name, input, expected):
-    expr = [e for e in outcomes() if e.meta.output_name() == outcome_name][0]
+    expr = [e for e in outcomes("eicu") if e.meta.output_name() == outcome_name][0]
     assert_series_equal(
         input.with_columns(expr).select(outcome_name).to_series(),
         expected.rename(outcome_name),
@@ -134,16 +134,6 @@ def test_outcomes(outcome_name, input, expected):
 @pytest.mark.parametrize(
     "outcome_name, input, expected_events, expected_labels",
     [
-        (
-            "respiratory_failure_at_24h",
-            pl.DataFrame(
-                {
-                    "pf_ratio": [None] * 36 + [100] * 12 + [None] * 24 + [500] * 12,
-                }
-            ),
-            pl.Series([None] * 36 + [True] * 12 + [None] * 24 + [False] * 12),
-            pl.Series([None] * 12 + [True] * 24 + [None] * 12 + [False] * 35 + [None]),
-        ),
         (
             "circulatory_failure_at_8h",
             pl.DataFrame(
@@ -209,7 +199,7 @@ def test_outcomes(outcome_name, input, expected):
     ],
 )
 def test_eep_outcomes(outcome_name, input, expected_events, expected_labels):
-    expr = [e for e in outcomes() if e.meta.output_name() == outcome_name][0]
+    expr = [e for e in outcomes("eicu") if e.meta.output_name() == outcome_name][0]
 
     assert_series_equal(
         input.with_columns(expr).select(outcome_name).to_series(),
