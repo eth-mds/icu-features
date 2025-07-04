@@ -42,18 +42,6 @@ def main(data_dir: str, dataset: str):  # noqa D
     sta = pl.scan_parquet(Path(data_dir) / dataset / "sta.parquet")
     sta = sta.collect()
 
-    if dataset == "hirid":
-        sta = sta.with_columns(
-            pl.when(pl.col("apache_group").is_null())
-            .then(pl.lit([]))
-            .otherwise(
-                pl.col("apache_group")
-                .cast(pl.String)
-                .map_elements(lambda x: [x], return_dtype=pl.List(pl.String))
-                .alias("icd_blocks")
-            )
-        )
-
     if dataset in ["eicu", "eicu_demo"]:
         # For eicu, we don't extract as list, but as a string of comma-separated values.
         sta = sta.with_columns(
@@ -63,9 +51,9 @@ def main(data_dir: str, dataset: str):  # noqa D
                     skip_nulls=False,
                     return_dtype=pl.List(pl.String),
                 ),
-            ),
-            return_dtype=pl.List(pl.List(pl.String)),
-        ).map_elements(lambda s: s.explode(), return_dtype=pl.List(pl.String))
+                return_dtype=pl.List(pl.List(pl.String)),
+            )
+        )
 
     sta = sta.with_columns(
         pl.col("icd10_diagnosis").cast(pl.List(pl.String)).fill_null([]),
