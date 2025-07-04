@@ -31,7 +31,7 @@ VariableID	VariableTag	VariableName	VariableType	OrganSystem	TreatmentGroups	Uni
 30	crp	C-reactive protein	observation	infection	None	mg/L	continuous	0.0	2000.0	Inflammation marker	true	0.01
 31	dbp	Diastolic blood pressure	observation	circulatory	None	mmHg	continuous	0.0	200.0	Diastolic blood pressure, blood pressure when heart rests	false	None
 32	fgn	Fibrinogen	observation	circulatory	None	mg/dL	continuous	0.0	1500.0	None	false	None
-33	glu	Glucose	observation	metabolic_renal	None	mg/dL	continuous	0.0	1000.0	None	true	5
+33	glu	Glucose	observation	metabolic_renal	None	mg/dL	continuous	0.0	1000.0	None	true	5.0
 34	hgb	Hemoglobin	observation	circulatory	None	g/dL	continuous	4.0	18.0	Oxygen carrying protein	false	None
 35	inr_pt	Prothrombin	observation	circulatory	None	None	continuous	0.0	50.0	Prothrombin time/international normalized ratio	true	0.01
 36	k	Potassium	observation	metabolic_renal	None	mmol/l	continuous	0.0	10.0	None	false	None
