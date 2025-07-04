@@ -36,7 +36,7 @@ jobs:
           python icu_features/feature_engineering.py --dataset "eicu_demo" --data_dir "tests/testdata"
       - name: feature engineering for eicu_demo
         run: |
-          python icu_features/split_datasets.py --data_dir "tests/testdata" --dataset "mimic_demo"
+          python icu_features/split_datasets.py --data_dir "tests/testdata"
           python icu_features/icd_codes.py --data_dir "tests/testdata" --dataset "mimic_demo-carevue"
           python icu_features/feature_engineering.py --dataset "mimic_demo-carevue" --data_dir "tests/testdata"
       - name: Pytest
