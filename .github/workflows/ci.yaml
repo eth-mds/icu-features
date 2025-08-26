@@ -30,6 +30,11 @@ jobs:
         run: python -m pip install --no-build-isolation --no-deps --disable-pip-version-check -e .
       - name: install icd-mappings
         run: pip install icd-mappings
+      - name: Move features.parquet out of the way
+        run: |
+          mv tests/testdata/eicu_demo/features.parquet tests/testdata/eicu_demo/old_features.parquet
+          mv tests/testdata/mimic_demo-carevue/features.parquet tests/testdata/mimic_demo-carevue/old_features.parquet
+          mv tests/testdata/miiv_demo/features.parquet tests/testdata/miiv_demo/old_features.parquet
       - name: feature engineering for eicu_demo
         run: |
           python icu_features/icd_codes.py --data_dir "tests/testdata" --dataset "eicu_demo"
@@ -43,6 +48,11 @@ jobs:
         run: |
           python icu_features/icd_codes.py --data_dir "tests/testdata" --dataset "miiv_demo"
           python icu_features/feature_engineering.py --dataset "miiv_demo" --data_dir "tests/testdata"
+      - name: compare new to old features.parquet
+        run: |
+          python -c "import pyarrow.parquet as pq;old = pq.read_table('tests/testdata/eicu_demo/old_features.parquet');new = pq.read_table('tests/testdata/eicu_demo/features.parquet');assert old.equals(new)"
+          python -c "import pyarrow.parquet as pq;old = pq.read_table('tests/testdata/mimic_demo-carevue/old_features.parquet');new = pq.read_table('tests/testdata/mimic_demo-carevue/features.parquet');assert old.equals(new)"
+          python -c "import pyarrow.parquet as pq;old = pq.read_table('tests/testdata/miiv_demo/old_features.parquet');new = pq.read_table('tests/testdata/miiv_demo/features.parquet');assert old.equals(new)"
       - name: Pytest
         run: pytest tests
 
